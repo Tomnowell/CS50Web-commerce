@@ -3,10 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    id = models.UUIDField(null=False, blank=False, primary_key=True)
-    first_name = models.CharField(max_length=128, blank=False)
-    last_name = models.CharField(max_length=128, blank=False)
-    avatar = models.URLField(null=True)
+    pass
 
 
 class Listing(models.Model):
@@ -14,7 +11,7 @@ class Listing(models.Model):
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     current_top_bid = models.DecimalField(max_digits=8, decimal_places=2)
-    bids = models.IntegerField(blank=True)
+    number_of_bids = models.IntegerField(blank=True)
     picture_link = models.URLField(null=True)
 
     def __str__(self):
@@ -25,6 +22,7 @@ class Bid(models.Model):
     bidder = models.CharField(max_length=128)
     item = models.CharField(max_length=128)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
+    date_created = models.DateTimeField(auto_now=True)
 
     def __eq__(self, Bid):
         if self.amount == Bid.amount:

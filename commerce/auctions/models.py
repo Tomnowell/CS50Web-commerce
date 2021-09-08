@@ -8,6 +8,8 @@ class User(AbstractUser):
 
 class Listing(models.Model):
     name = models.CharField(max_length=128)
+    host = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="listings")
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     current_top_bid = models.DecimalField(max_digits=8, decimal_places=2)
@@ -19,7 +21,8 @@ class Listing(models.Model):
 
 
 class Bid(models.Model):
-    bidder = models.CharField(max_length=128)
+    bidder = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_names="item_bids")
     item = models.CharField(max_length=128)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)

@@ -22,7 +22,7 @@ class Listing(models.Model):
 
 class Bid(models.Model):
     bidder = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_names="item_bids")
+        User, on_delete=models.CASCADE, related_name="item_bids")
     item = models.CharField(max_length=128)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)

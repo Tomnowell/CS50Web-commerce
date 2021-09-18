@@ -66,4 +66,6 @@ def register(request):
 
 
 def showEntries(request):
-    # TODO
+    if request.method == "GET":
+        # Show all entries
+        return render(request, "auctions/listings.html", listings)

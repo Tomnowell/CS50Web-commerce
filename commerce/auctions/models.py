@@ -39,8 +39,8 @@ class Listing(models.Model):
 
     name = models.CharField(max_length=128)
     owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="listings")
-    category = models.CharField(choices=CATEGORIES, default="Automotive")
+        User, on_delete=models.CASCADE, related_name="owner")
+    category = models.CharField(choices=CATEGORIES, default="Home")
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     picture_link = models.URLField(null=True)
@@ -51,7 +51,7 @@ class Listing(models.Model):
         return f"Listing: {self.name} Owner: {self.owner} Top Bid:{self.current_top_bid}"
 
     def save(self):
-        self.starting_time = datetime(now)
+        self.starting_time = datetime()
         self.ending_time = (self.starting_time + 7)
 
 

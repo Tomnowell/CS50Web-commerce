@@ -12,8 +12,6 @@ class Listing(models.Model):
         User, on_delete=models.CASCADE, related_name="listings")
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
-    current_top_bid = models.DecimalField(max_digits=8, decimal_places=2)
-    number_of_bids = models.IntegerField(blank=True)
     picture_link = models.URLField(null=True)
 
     def __str__(self):
@@ -22,8 +20,9 @@ class Listing(models.Model):
 
 class Bid(models.Model):
     bidder = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="item_bids")
-    item = models.CharField(max_length=128)
+        User, on_delete=models.CASCADE, related_name="item_bidder")
+    item = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="bid_on_item")
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)
 
@@ -34,3 +33,13 @@ class Bid(models.Model):
 
     def __str__(self):
         return f"{self.bidder}->{self.item}->{self.amount}"
+
+
+class Comment(models.Model):
+    commentor = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="commentor")
+    comment = models.TextField(blank=True)
+    votes = models.DecimalField(max_digits=6)
+
+    def __str__(self):
+        return f"{self.commentor}->{self.comment}->votes:{self.votes}"

@@ -38,6 +38,8 @@ class Bid(models.Model):
 class Comment(models.Model):
     commentor = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="commentor")
+    item = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="commented_listing")
     comment = models.TextField(blank=True)
     votes = models.DecimalField(max_digits=6)
 

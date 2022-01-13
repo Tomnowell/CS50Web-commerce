@@ -44,8 +44,8 @@ class Listing(models.Model):
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     picture_link = models.URLField(null=True)
-    self.start_time = models.DateTimeField
-    self.end_time = models.DateTimeField
+    start_time = models.DateTimeField
+    end_time = models.DateTimeField
 
     def __str__(self):
         return f"Listing: {self.name} Owner: {self.owner} Top Bid:{self.current_top_bid}"

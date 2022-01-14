@@ -23,24 +23,25 @@ class User(AbstractUser):
 
 class Listing(models.Model):
     CATEGORIES = [
-        "Automotive",
-        "Electronics & Computers",
-        "Fashion",
-        "Garden",
-        "Home",
-        "Industrial",
-        "Japanese manga & anime",
-        "Lifestyle",
-        "Music & Musical Instruments",
-        "Sports",
-        "Software & Computer Games",
-        "Spaceships"
+        ("AUTOMOTIVE", "Automotive"),
+        ("ELCTRONICS", "Electronics & Computers"),
+        ("FASHION", "Fashion"),
+        ("GARDEN", "Garden"),
+        ("HOME", "Home"),
+        ("INDUSTRIAL", "Industrial"),
+        ("MANGA", "Japanese manga & anime"),
+        ("LIFESTYLE", "Lifestyle"),
+        ("MUSIC", "Music & Musical Instruments"),
+        ("SPORTS", "Sports"),
+        ("SOFTWARE", "Software & Computer Games"),
+        ("SPACESHIPS", "Spaceships"),
     ]
 
     name = models.CharField(max_length=128)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="owner")
-    category = models.CharField(choices=CATEGORIES, default="Home")
+    category = models.CharField(
+        choices=CATEGORIES, default="Home", max_length=255, blank=False)
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     picture_link = models.URLField(null=True)
@@ -78,7 +79,7 @@ class Comment(models.Model):
     item = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="commented_listing")
     comment = models.TextField(blank=True, max_length=1024)
-    votes = models.IntegerField(max_digits=6)
+    votes = models.IntegerField()
 
     def __str__(self):
         return f"{self.commentor}->{self.comment}->votes:{self.votes}"

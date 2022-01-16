@@ -5,25 +5,12 @@
 {% block body %}
     <h1> {{ listing.name }} </h1>
 
-    <img class="my-2" src="{{ listing.image.url }}">
+    <img class="my-2" src="{{ listing.picture_link }}">
 
     <p> {{ listing.description }} </p>
 
-    <h4>Starting Bid: {{ listing.bids.starting_bid}}</h4>
+    <h4>Starting Bid: {{ listing.starting_bid}}</h4>
 
     <div> Auction ends: {{ listing.end_time }}</div>
     
-    {% if request.user.is_authenticated %}
-
-        <div class="my-2">
-            <form method="POST" action="{% url 'watch_auction' auction.id %}" class="form-inline">
-                {% csrf_token %}
-                {% if auction in request.user.watchlist.all %}
-                    <input class="btn btn-secondary btn-sm" type="submit" value="remove">
-                {% else %}
-                    <input class="btn btn-secondary btn-sm" type="submit" value="add">
-                {% endif %}
-            </form>
-        </div>
-
-    {% endif %}
+{% endblock%}

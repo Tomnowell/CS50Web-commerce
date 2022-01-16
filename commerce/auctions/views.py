@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Listing, Bid
 
@@ -74,25 +75,23 @@ def show_entries(request):
         })
 
 
-@login_required(login_url="/login")
 def show_listing(request, listing_id):
     if request.method == "GET":
-        return show_listing_GET(request, item)
+        return show_listing_GET(request, listing_id)
     elif request.method == "POST":
-        return show_listing_POST(request, item)
+        return show_listing_POST(request)
     else:
         raise ValueError
         return
 
 
-@login_required(login_url="/login")
-def show_listing_GET(request, item):
+def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
     return render(request, "auctions/listing.html", {"listing", current_listing})
 
 
 @login_required(login_url="/login")
-def show_listing_POST(request, item):
+def show_listing_POST(request):
     return
 
 

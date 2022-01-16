@@ -1,19 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from datetime import datetime, timezone
-
-CATEGORIES = [
-    "Accessories",
-    "Household & Bathroom",
-    "DIY",
-    "Electronics",
-    "Specialist",
-    "Computers & Consoles",
-    "Clothing",
-    "Food & Perishables",
-    "Booze"
-
-]
+from datetime import datetime, timedelta, timezone
 
 
 class User(AbstractUser):
@@ -34,31 +21,27 @@ class Listing(models.Model):
         ("MUSIC", "Music & Musical Instruments"),
         ("SPORTS", "Sports"),
         ("SOFTWARE", "Software & Computer Games"),
-        ("SPACESHIPS", "Spaceships"),
+        ("SPACESHIPS", "Spaceships")
     ]
 
-    name = models.CharField(max_length=128)
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owner")
+    name = models.CharField(max_length=64)
+    # auctioneer = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(
         choices=CATEGORIES, default="Home", max_length=255, blank=False)
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     picture_link = models.URLField(null=True)
-    start_time = models.DateTimeField
-    end_time = models.DateTimeField
+    start_time = models.DateTimeField(datetime.now(timezone.utc))
+    end_time = models.DateTimeField(
+        default=(datetime.now(timezone.utc) + timedelta(7)))
 
     def __str__(self):
-        return f"Listing: {self.name} Owner: {self.owner} Top Bid:{self.current_top_bid}"
-
-    def save(self):
-        self.starting_time = datetime()
-        self.ending_time = (self.starting_time + 7)
+        return f"Listing: {self.name} Owner: {self.owner} Start: {self.start_time} End: {self.end_time}"
 
 
 class Bid(models.Model):
     bidder = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="item_bidder")
+        User, on_delete=models.CASCADE)
     item = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="bid_on_item")
     amount = models.DecimalField(max_digits=8, decimal_places=2)
@@ -75,7 +58,7 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     commentor = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="commentor")
+        User, on_delete=models.CASCADE)
     item = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="commented_listing")
     comment = models.TextField(blank=True, max_length=1024)
@@ -83,7 +66,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.commentor}->{self.comment}->votes:{self.votes}"
-        return f"Bidder: {self.bidder} Item: {self.item} Bid: {self.amount}"
 
 
 class Watchlist(models.Model):

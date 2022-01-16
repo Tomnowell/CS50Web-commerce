@@ -1,3 +1,4 @@
+from asyncio import exceptions
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -65,7 +66,45 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-def showEntries(request):
+def show_entries(request):
     if request.method == "GET":
         # Show all entries
-        return render(request, "auctions/listings.html", listings)
+        return render(request, "auctions/listings.html", {
+            'listings': Listing.objects.all()
+        })
+
+
+@login_required(login_url="/login")
+def show_listing(request, listing_id):
+    if request.method == "GET":
+        return show_listing_GET(request, item)
+    elif request.method == "POST":
+        return show_listing_POST(request, item)
+    else:
+        raise ValueError
+        return
+
+
+@login_required(login_url="/login")
+def show_listing_GET(request, item):
+    current_listing = Listing.objects.get(id=listing_id)
+    return render(request, "auctions/listing.html", {"listing", current_listing})
+
+
+@login_required(login_url="/login")
+def show_listing_POST(request, item):
+    return
+
+
+@login_required(login_url="/login")
+def add_listing(request):
+    if request.method == "GET":
+        return render(request, "auctions/add_listing.html")
+
+    elif request.method == "POST":
+        # process listing
+        return
+
+    else:
+        raise Exception()
+        return

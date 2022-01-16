@@ -1,0 +1,29 @@
+<div class="card-deck">
+    {% for listing in listings %}
+    <div class="card mb-3" style="max-width: 540px;">
+        <div class="row no-gutters">  
+            <div class="col-md-4">
+                <img src="{{listing.picture_link}}" class="card-img" alt="Product image">
+            </div>  
+            <div class="col-md-8">
+                <h5 class="card-title">{{ listing.name }}</h5>
+                <p class="card-text">{{ listing.description}}</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Auctioneer: {{listing.auctioneer}}</li>
+                    <li class="list-group-item">Starting bid: {{ listing.starting_bid }}</li>
+                    <li class="list-group-item">Start time: {{ listing.start_time }}</li>
+                    <li class="list-group-item">End time: {{ listing.end_time }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col-md-12">
+                <div class="card-footer">
+                    <a href="#" class="card-link">Bid Now</a>
+                    <a href="#" class="card-link">Add to watchlist</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

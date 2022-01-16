@@ -6,12 +6,14 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Bid
+from .models import *
 
 
 def index(request):
+
+    listings = Listing.objects.all()
     return render(request, "auctions/index.html", {
-        'listings': Listing.objects.all()
+        'listings': listings
     })
 
 
@@ -90,7 +92,6 @@ def show_listing_GET(request, listing_id):
     return render(request, "auctions/listing.html", {"listing", current_listing})
 
 
-@login_required(login_url="/login")
 def show_listing_POST(request):
     return
 

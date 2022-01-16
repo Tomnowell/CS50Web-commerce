@@ -36,7 +36,7 @@ class Listing(models.Model):
         default=(datetime.now(timezone.utc) + timedelta(7)))
 
     def __str__(self):
-        return f"Listing: {self.name} Owner: {self.owner} Start: {self.start_time} End: {self.end_time}"
+        return f"Listing: {self.name} Owner: {self.auctioneer} Start: {self.start_time} End: {self.end_time}"
 
 
 class Bid(models.Model):

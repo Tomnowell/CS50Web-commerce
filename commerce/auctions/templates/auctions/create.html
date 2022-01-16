@@ -5,4 +5,14 @@
 <div class="container">
     <div class="title">Create New Listing</div>
 
-    <form action=""
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <table>
+                {{ form.as_table}}
+            </table>
+            <input class="btn-primary" type="submit" value="Create" />
+        </div>
+
+    </form>
+{{% endblock %}}

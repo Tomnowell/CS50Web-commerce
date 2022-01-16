@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 from .models import *
+from .forms import *
 
 
 def index(request):
@@ -77,11 +78,11 @@ def show_entries(request):
         })
 
 
-def show_listing(request, listing_id):
+def show_listing(request, id):
     if request.method == "GET":
-        return show_listing_GET(request, listing_id)
+        return show_listing_GET(request, id)
     elif request.method == "POST":
-        return show_listing_POST(request)
+        return show_listing_POST(request, id)
     else:
         raise ValueError
         return
@@ -89,11 +90,32 @@ def show_listing(request, listing_id):
 
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
-    return render(request, "auctions/listing.html", {"listing", current_listing})
+    return render(request, "auctions/listing.html", {"listing": current_listing})
 
 
-def show_listing_POST(request):
-    return
+def show_listing_POST(request, listing_id):
+    current_listing = Listing.objects.get(id=listing_id)
+    return render(request, "auctions/listing.html", {"listing": current_listing})
+
+
+def create(request):
+    if request.method == "GET":
+        create_if_GET(request)
+
+    elif request.method == "POST":
+        create_if_POST(request)
+
+
+def create_if_GET(request):
+    return render(request, "auctions/create.html")
+
+
+def create_if_POST(request):
+    form = listing_form(request.POST)
+    if form.is_valid():
+        new_listing = form.create()
+
+    return HttpResponseRedirect()
 
 
 @login_required(login_url="/login")

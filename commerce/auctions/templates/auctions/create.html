@@ -2,8 +2,8 @@
 
 {% block body %}
 
-<div class="container">
-    <div class="title">Create New Listing</div>
+
+    <h2>Create New Listing</h2>
 
     <form method="POST">
         {% csrf_token %}
@@ -15,4 +15,4 @@
         </div>
 
     </form>
-{{% endblock %}}
+{% endblock %}

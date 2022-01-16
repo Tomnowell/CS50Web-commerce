@@ -1,13 +1,11 @@
 from cProfile import label
 from unicodedata import category
-from django.forms import *
+from django.forms import ModelForm
 from .models import Listing, Bid, Comment, Review
 
 
 class listing_form(ModelForm):
-    name = CharField(label="Name", required=True, widget=TextInput())
-    category = ChoiceField(required=True, choices=Listing.CATEGORIES)
-    description = CharField(label="Description")
-    picture_link = URLField(label="Picture URL")
-    starting_bid = DecimalField(decimal_places=2)
-    end_date = DateField()
+    class Meta:
+        model = Listing
+        fields = ['name', 'auctioneer', 'category', 'description',
+                  'starting_bid', 'picture_link', 'start_time', 'end_time']

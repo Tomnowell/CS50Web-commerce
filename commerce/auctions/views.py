@@ -84,8 +84,7 @@ def show_listing(request, id):
     elif request.method == "POST":
         return show_listing_POST(request, id)
     else:
-        raise ValueError
-        return
+        return show_listing_GET(request, id)
 
 
 def show_listing_GET(request, listing_id):
@@ -100,13 +99,17 @@ def show_listing_POST(request, listing_id):
 
 def create(request):
     if request.method == "GET":
-        create_if_GET(request)
+        return create_if_GET(request)
 
     elif request.method == "POST":
-        create_if_POST(request)
+        return create_if_POST(request)
+
+    else:
+        return create_if_GET(request)
 
 
 def create_if_GET(request):
+    form = listing_form()
     return render(request, "auctions/create.html")
 
 

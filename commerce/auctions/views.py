@@ -116,9 +116,11 @@ def create_if_GET(request):
 def create_if_POST(request):
     form = listing_form(request.POST)
     if form.is_valid():
-        new_listing = form.create()
-
-    return HttpResponseRedirect()
+        new_listing = form.save()
+        new_listing_id = str(new_listing.id)
+        return HttpResponseRedirect("listing/"+new_listing_id)
+    else:
+        raise ValueError
 
 
 @login_required(login_url="/login")

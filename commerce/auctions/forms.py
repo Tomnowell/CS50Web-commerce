@@ -7,5 +7,11 @@ from .models import Listing, Bid, Comment, Review
 class listing_form(ModelForm):
     class Meta:
         model = Listing
-        fields = ['name', 'auctioneer', 'category', 'description',
-                  'starting_bid', 'picture_link', 'start_time', 'end_time']
+        fields = ['name',  'category', 'description',
+                  'starting_bid', 'picture_link', 'end_time']
+
+
+class bid_form(ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['bidder', 'item', 'amount']

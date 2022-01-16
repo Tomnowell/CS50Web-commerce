@@ -35,6 +35,9 @@ class Listing(models.Model):
     end_time = models.DateTimeField(
         default=(datetime.now(timezone.utc) + timedelta(7)))
 
+    def save(self):
+        self.start_time = datetime.now(timezone.utc)
+
     def __str__(self):
         return f"Listing: {self.name} Owner: {self.auctioneer} Start: {self.start_time} End: {self.end_time}"
 

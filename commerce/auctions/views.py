@@ -121,6 +121,7 @@ def create_if_POST(request):
         return HttpResponseRedirect("listing/"+new_listing_id)
     else:
         raise ValueError
+        return HttpResponseRedirect("/")
 
 
 @login_required(login_url="/login")

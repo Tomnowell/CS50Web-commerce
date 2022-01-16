@@ -25,7 +25,7 @@ class Listing(models.Model):
     ]
 
     name = models.CharField(max_length=64)
-    # auctioneer = models.ForeignKey(User, on_delete=models.CASCADE)
+    auctioneer = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(
         choices=CATEGORIES, default="Home", max_length=255, blank=False)
     description = models.TextField(blank=True)

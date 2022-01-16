@@ -110,7 +110,7 @@ def create(request):
 
 def create_if_GET(request):
     form = listing_form()
-    return render(request, "auctions/create.html")
+    return render(request, "auctions/create.html", {"form": form})
 
 
 def create_if_POST(request):

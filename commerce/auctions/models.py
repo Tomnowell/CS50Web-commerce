@@ -41,6 +41,9 @@ class Listing(models.Model):
     def __str__(self):
         return f"Listing: {self.name} Owner: {self.auctioneer} Start: {self.start_time} End: {self.end_time}"
 
+    def __eq__(self, other):
+        return self.auctioneer == other.auctioneer
+
 
 class Bid(models.Model):
     bidder = models.ForeignKey(

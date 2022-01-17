@@ -14,4 +14,4 @@ class listing_form(ModelForm):
 class bid_form(ModelForm):
     class Meta:
         model = Bid
-        fields = ['bidder', 'item', 'amount']
+        fields = ['amount']

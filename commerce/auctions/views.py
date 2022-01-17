@@ -78,6 +78,12 @@ def show_entries(request):
         })
 
 
+def is_user_also_auctioneer(request, listing):
+    if request.user.username == listing.auctioneer:
+        return True
+    return False
+
+
 def show_listing(request, id):
     if request.method == "GET":
         return show_listing_GET(request, id)
@@ -89,7 +95,19 @@ def show_listing(request, id):
 
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
-    return render(request, "auctions/listing.html", {"listing": current_listing})
+    if is_user_also_auctioneer(request, current_listing):
+        end_button_visibility = "active"
+        aria_disabled = "false"
+        tab_index = "1"
+    else:
+        end_button_visibility = "disabled"
+        aria_dissabled = "true"
+        tab_index = "-1"
+
+    return render(request, "auctions/listing.html", {"listing": current_listing,
+                                                     "visibility": end_button_visibility,
+                                                     "aria_dissabled": aria_disabled,
+                                                     "tab_index": tab_index})
 
 
 def show_listing_POST(request, listing_id):
@@ -118,10 +136,34 @@ def create_if_POST(request):
     if form.is_valid():
         new_listing = form.save()
         new_listing_id = str(new_listing.id)
+
         return HttpResponseRedirect("listing/"+new_listing_id)
     else:
         raise ValueError
-        return HttpResponseRedirect("/")
+
+
+def bid(request, id):
+    if request.method == "GET":
+        return bid_if_GET(request, id)
+
+    elif request.method == "POST":
+        return bid_if_POST(request, id)
+
+    else:
+        return bid_if_GET(request)
+
+
+def bid_if_GET(request, id):
+    form = bid_form()
+    return render(request, "auctions/bid.html", {"form": form,
+                                                 "id": id})
+
+
+def bid_if_POST(request, id):
+    form = bid_form(request.Post)
+    if form.is_valid():
+        new_bid = form.save()
+        return HttpResponseRedirect("listing/"+id)
 
 
 @login_required(login_url="/login")

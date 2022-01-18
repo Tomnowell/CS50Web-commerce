@@ -95,14 +95,15 @@ def show_listing(request, id):
 
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
+
+    end_button_visibility = "disabled"
+    aria_disabled = "true"
+    tab_index = "-1"
+
     if is_user_also_auctioneer(request, current_listing):
         end_button_visibility = "active"
         aria_disabled = "false"
         tab_index = "1"
-    else:
-        end_button_visibility = "disabled"
-        aria_dissabled = "true"
-        tab_index = "-1"
 
     return render(request, "auctions/listing.html", {"listing": current_listing,
                                                      "visibility": end_button_visibility,
@@ -160,10 +161,16 @@ def bid_if_GET(request, id):
 
 
 def bid_if_POST(request, id):
-    form = bid_form(request.Post)
+    form = bid_form(request.POST)
     if form.is_valid():
         new_bid = form.save()
         return HttpResponseRedirect("listing/"+id)
+
+
+def is_bid_valid(request, bid):
+    if bid > Bid.id.amount:
+        return True
+    return False
 
 
 @login_required(login_url="/login")

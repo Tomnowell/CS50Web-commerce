@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
+from decimal import Decimal
+
 from .models import *
 from .forms import *
 
@@ -132,6 +134,7 @@ def create_if_GET(request):
     return render(request, "auctions/create.html", {"form": form})
 
 
+@login_required(login_url="/login")
 def create_if_POST(request):
     form = listing_form(request.POST)
     if form.is_valid():
@@ -143,6 +146,7 @@ def create_if_POST(request):
         raise ValueError
 
 
+@login_required(login_url="/login")
 def bid(request, id):
     if request.method == "GET":
         return bid_if_GET(request, id)
@@ -160,15 +164,32 @@ def bid_if_GET(request, id):
                                                  "id": id})
 
 
+@login_required(login_url="/login")
 def bid_if_POST(request, id):
     form = bid_form(request.POST)
+
     if form.is_valid():
-        new_bid = form.save()
-        return HttpResponseRedirect("listing/"+id)
+        item_listing = Listing.objects.get(id=id)
+
+        # WE NEED TO CHANGE THIS, it's not right!
+        current_bid = Decimal(item_listing.starting_bid)
+        bidder = request.user
+        new_bid_amount = Decimal(request.POST['amount'])
+        if is_bid_valid(current_bid, new_bid_amount):
+            new_bid = Bid()
+            new_bid.amount = new_bid_amount
+            new_bid.bidder = bidder
+            new_bid.item = item_listing
+            new_bid.save()
+            return HttpResponseRedirect("/listing/"+id)
+        else:
+            return HttpResponse("Invalid Bid")
+    else:
+        return HttpResponse("Invalid Form")
 
 
-def is_bid_valid(request, bid):
-    if bid > Bid.id.amount:
+def is_bid_valid(current_bid, new_bid_amount):
+    if new_bid_amount > current_bid:
         return True
     return False
 
@@ -184,4 +205,3 @@ def add_listing(request):
 
     else:
         raise Exception()
-        return

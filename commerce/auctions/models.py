@@ -53,6 +53,14 @@ class Bid(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)
 
+    def get_current_bid(item, bid):
+        """[Returns the current bid]
+
+        Args:
+            item ([Listing]): [The Listing details as a Listing model]
+            bid ([Bid]): [the current high bid, could be replaced by this bid]
+        """
+
     def __eq__(self, Bid):
         if self.amount == Bid.amount:
             return True

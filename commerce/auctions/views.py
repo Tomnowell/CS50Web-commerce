@@ -194,14 +194,5 @@ def is_bid_valid(current_bid, new_bid_amount):
     return False
 
 
-@login_required(login_url="/login")
-def add_listing(request):
-    if request.method == "GET":
-        return render(request, "auctions/add_listing.html")
-
-    elif request.method == "POST":
-        # process listing
-        return
-
-    else:
-        raise Exception()
+def get_current_high_bid(Listing):
+    all_bids = Bid.objects.filter(item=Listing)

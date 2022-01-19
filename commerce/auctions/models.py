@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
 from datetime import datetime, timedelta, timezone
 
 
@@ -49,7 +50,7 @@ class Bid(models.Model):
     bidder = models.ForeignKey(
         User, on_delete=models.CASCADE)
     item = models.ForeignKey(
-        Listing, on_delete=models.CASCADE, related_name="bid_on_item")
+        Listing, on_delete=models.CASCADE, related_name="bid_on_item_id")
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)
 
@@ -60,6 +61,11 @@ class Bid(models.Model):
 
     def __str__(self):
         return f"{self.bidder}->{self.item}->{self.amount}"
+
+    def get_current_bid(item):
+        item_list = Listing.objects.filter(id=item)
+        current_bid = item_list.objects.aggregate(Max('amount'))
+        return(current_bid)
 
 
 class Comment(models.Model):

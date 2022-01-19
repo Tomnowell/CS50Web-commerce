@@ -92,4 +92,4 @@ class Review(models.Model):
     listing = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="bids")
     time = models.DateTimeField(auto_now_add=True)
-    stars = models.IntegerField(max_length=1)
+    stars = models.IntegerField()

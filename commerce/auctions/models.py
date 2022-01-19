@@ -31,6 +31,7 @@ class Listing(models.Model):
         choices=CATEGORIES, default="Home", max_length=255, blank=False)
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
+    number_of_bids = models.IntegerField(default=0)
     picture_link = models.URLField(null=True)
     start_time = models.DateTimeField(datetime.now(timezone.utc))
     end_time = models.DateTimeField(
@@ -38,6 +39,9 @@ class Listing(models.Model):
 
     def save(self):
         self.start_time = datetime.now(timezone.utc)
+
+    def increment_bid_number(self):
+        self.number_of_bids += 1
 
     def __str__(self):
         return f"Listing: {self.name} Owner: {self.auctioneer} Start: {self.start_time} End: {self.end_time}"

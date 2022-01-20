@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 class User(AbstractUser):
     def __str__(self):
-        return f"{self.username}"
+        return str(self.username)
 
 
 class Listing(models.Model):
@@ -44,7 +44,7 @@ class Listing(models.Model):
         self.number_of_bids += 1
 
     def __str__(self):
-        return f"Listing: {self.name} Owner: {self.auctioneer.username} Start: {self.start_time} End: {self.end_time}"
+        return f"Listing: {str(self.name)} Owner: {str(self.auctioneer.username)} Start: {str(self.start_time)} End: {str(self.end_time)}"
 
     def __eq__(self, other):
         return self.auctioneer == other.auctioneer
@@ -58,13 +58,13 @@ class Bid(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)
 
-    def __eq__(self, Bid):
-        if self.amount == Bid.amount:
+    def __eq__(self, bid):
+        if self.amount == bid.amount:
             return True
         return False
 
     def __str__(self):
-        return f"{self.bidder.name}->{self.item.name}->{self.amount}"
+        return f"{str(self.bidder.username)}->{str(self.item.name)}->{str(self.amount)}"
 
     def get_current_bid(self):
         bid_list = self.get_all_bids(self)
@@ -88,7 +88,7 @@ class Comment(models.Model):
     votes = models.IntegerField()
 
     def __str__(self):
-        return f"{self.commentor.username}->{self.comment}->votes:{self.votes}"
+        return f"{str(self.commentor.username)}->{str(self.comment)}->votes:{str(self.votes)}"
 
 
 class Watchlist(models.Model):

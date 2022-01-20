@@ -33,12 +33,10 @@ class Listing(models.Model):
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     number_of_bids = models.IntegerField(default=0)
     picture_link = models.URLField(null=True)
-    start_time = models.DateTimeField(datetime.now(timezone.utc))
+    start_time = models.DateTimeField(
+        default=datetime.now(timezone.utc), editable=False)
     end_time = models.DateTimeField(
         default=(datetime.now(timezone.utc) + timedelta(7)))
-
-    def save(self):
-        self.start_time = datetime.now(timezone.utc)
 
     def increment_bid_number(self):
         self.number_of_bids += 1

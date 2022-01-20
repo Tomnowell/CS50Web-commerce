@@ -194,6 +194,10 @@ def is_bid_valid(current_bid_amount, new_bid_amount):
     return False
 
 
+<<<<<<< HEAD
+def get_current_high_bid(Listing):
+    all_bids = Bid.objects.filter(item=Listing)
+=======
 @ login_required(login_url="/login")
 def add_listing(request):
     if request.method == "GET":
@@ -205,3 +209,4 @@ def add_listing(request):
 
     else:
         raise Exception()
+>>>>>>> 6fd315f7ac67c1b96dcf0f29b9fab6ed83c1e017

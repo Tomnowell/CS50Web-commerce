@@ -172,10 +172,10 @@ def bid_if_POST(request, id):
         item_listing = Listing.objects.get(id=id)
 
         # WE NEED TO CHANGE THIS, it's not right!
-        current_bid = Decimal(item_listing.starting_bid)
+        current_bid_amount = Bid.get_current_bid(item_listing.name)
         bidder = request.user
         new_bid_amount = Decimal(request.POST['amount'])
-        if is_bid_valid(current_bid, new_bid_amount):
+        if is_bid_valid(current_bid_amount, new_bid_amount):
             new_bid = Bid()
             new_bid.amount = new_bid_amount
             new_bid.bidder = bidder
@@ -188,13 +188,13 @@ def bid_if_POST(request, id):
         return HttpResponse("Invalid Form")
 
 
-def is_bid_valid(current_bid, new_bid_amount):
-    if new_bid_amount > current_bid:
+def is_bid_valid(current_bid_amount, new_bid_amount):
+    if new_bid_amount > (current_bid_amount + 1):
         return True
     return False
 
 
-@login_required(login_url="/login")
+@ login_required(login_url="/login")
 def add_listing(request):
     if request.method == "GET":
         return render(request, "auctions/add_listing.html")

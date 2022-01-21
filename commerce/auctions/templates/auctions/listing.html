@@ -9,7 +9,11 @@
 
     <p> {{ listing.description }} </p>
 
-    <h4>Starting Bid: {{ listing.starting_bid}}</h4>
+    <h5> Auctioneer: <strong>{{ listing.auctioneer }}</strong></h5>
+
+    <h5>Starting Bid: {{ listing.starting_bid}}</h5>
+    <h5>Current Bid: {{ listing.get_current_bid }}</h5>
+
 
 
     <div> Auction ends: {{ listing.end_time }}</div>

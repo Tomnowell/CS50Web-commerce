@@ -137,11 +137,19 @@ def create_if_GET(request):
 @login_required(login_url="/login")
 def create_if_POST(request):
     form = listing_form(request.POST)
-    if form.is_valid():
-        new_listing = form.save()
-        new_listing_id = str(new_listing.id)
 
-        return HttpResponseRedirect("listing/"+new_listing_id)
+    if form.is_valid():
+        new_listing = Listing()
+        new_listing.name = form.cleaned_data['name']
+        new_listing.auctioneer = request.user
+        new_listing.category = form.cleaned_data['category']
+        new_listing.description = form.cleaned_data['description']
+        new_listing.starting_bid = form.cleaned_data['starting_bid']
+        new_listing.picture_link = form.cleaned_data['picture_link']
+        new_listing.end_time = form.cleaned_data['end_time']
+        new_listing.save()
+        new_listing_id = str(new_listing.id)
+        return HttpResponseRedirect("listing/" + new_listing_id)
     else:
         raise ValueError
 
@@ -172,10 +180,10 @@ def bid_if_POST(request, id):
         item_listing = Listing.objects.get(id=id)
 
         # WE NEED TO CHANGE THIS, it's not right!
-        current_bid_amount = Bid.get_current_bid(item_listing.name)
+
         bidder = request.user
-        new_bid_amount = Decimal(request.POST['amount'])
-        if is_bid_valid(current_bid_amount, new_bid_amount):
+        new_bid_amount = Decimal(form.cleaned_data['amount'])
+        if is_bid_valid(item_listing, new_bid_amount):
             new_bid = Bid()
             new_bid.amount = new_bid_amount
             new_bid.bidder = bidder
@@ -188,16 +196,14 @@ def bid_if_POST(request, id):
         return HttpResponse("Invalid Form")
 
 
-def is_bid_valid(current_bid_amount, new_bid_amount):
-    if new_bid_amount > (current_bid_amount + 1):
+def is_bid_valid(item_listing, new_bid_amount):
+    current_bid_amount = item_listing.get_current_bid()
+    starting_bid = item_listing.starting_bid
+    if new_bid_amount > (current_bid_amount + Decimal(0.99)) and new_bid_amount >= starting_bid:
         return True
     return False
 
 
-<<<<<<< HEAD
-def get_current_high_bid(Listing):
-    all_bids = Bid.objects.filter(item=Listing)
-=======
 @ login_required(login_url="/login")
 def add_listing(request):
     if request.method == "GET":
@@ -209,4 +215,3 @@ def add_listing(request):
 
     else:
         raise Exception()
->>>>>>> 6fd315f7ac67c1b96dcf0f29b9fab6ed83c1e017

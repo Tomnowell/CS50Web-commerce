@@ -1,10 +1,12 @@
 from asyncio import exceptions
+from email import message
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from decimal import Decimal
 
@@ -178,11 +180,9 @@ def bid_if_POST(request, id):
 
     if form.is_valid():
         item_listing = Listing.objects.get(id=id)
-
-        # WE NEED TO CHANGE THIS, it's not right!
-
         bidder = request.user
         new_bid_amount = Decimal(form.cleaned_data['amount'])
+
         if is_bid_valid(item_listing, new_bid_amount):
             new_bid = Bid()
             new_bid.amount = new_bid_amount
@@ -191,9 +191,10 @@ def bid_if_POST(request, id):
             new_bid.save()
             return HttpResponseRedirect("/listing/"+id)
         else:
-            return HttpResponse("Invalid Bid")
-    else:
-        return HttpResponse("Invalid Form")
+
+            return HttpResponseRedirect("/listing/"+id, {"message": messages.warning(request, 'Invalid Bid!')})
+
+    return HttpResponseRedirect("listing/"+id, {"message": messages.warning(request, 'Invalid Form!')})
 
 
 def is_bid_valid(item_listing, new_bid_amount):

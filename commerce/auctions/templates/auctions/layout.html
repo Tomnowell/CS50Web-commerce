@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 {% load static %}
 
-<!DOCTYPE html>
+
 <html lang="en">
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
@@ -8,18 +9,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'font_awesome/css/all.min.css' %}">
-        <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     </head>
     <body>
         
         <div class="container-fluid">
-            <div class="row g-0">
+            <div class="row">
                 <div class="col-md-12">
                     <h1>T-Bay</h1>
                 </div>
             </div>
-            <div class="row g-0">
+            <div class="row">
                 <div class="col-md-12">
                     {% if user.is_authenticated %}
                         Signed in as <strong> {{ user.username }}</strong>.
@@ -29,12 +29,12 @@
                     <hr>
                 </div>
             </div>
-            <div class="row g-0">
+            <div class="row">
                 <div class="col-md-12">
                     {% include "auctions/includes/nav.html" %}
                 </div>
             </div>
-            <div class="row g-0">
+            <div class="row">
                 <div class="col-md-3">
                     {% include "auctions/includes/categories_nav.html" %}
                 </div>
@@ -43,14 +43,14 @@
                     {% endblock %}
                 </div>
             </div>
-            <div class="row g-0">
-                <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12 fixed-bottom">
                     {% block footer %}
                         {% include "auctions/includes/messages.html" %}
                     {% endblock %}
                 </div>
             </div>
         </div>
-        
+        <script src="{% static 'js/bootstrap.min.js' %}"></script> 
     </body>
 </html>

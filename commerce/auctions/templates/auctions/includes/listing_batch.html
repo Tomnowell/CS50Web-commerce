@@ -2,7 +2,7 @@
     {% for listing in listings %}
         <div class="card w-100">
             <span class="border border-primary"></span>
-                <div class="row no-gutters">  
+                <div class="row g-0">  
                     <div class="col-3">
                         <img src="{{listing.picture_link}}" class="card-img" alt="Product image">
                     </div>  
@@ -18,22 +18,14 @@
                         </ul>
                     </div>
                 </div>
-                <div class="row no-gutters"></div>
+                <div class="row g-0">
                     <div class="col-12"> 
-                        <ul class="nav nav-pills">
-                            <li class="nav-item">
-                                <a href="./listing/{{listing.id}}" class="nav-item nav-link">View</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./listing/{{listing.id}}/bid" class="nav-item nav-link">Bid</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-item nav-link">Watchlist</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-item nav-link {{visibility}}" tab-index="{{tab_index}}" aria-disabled="{{aria_disabled}}">End</a>  
-                            </li> 
-                        </ul>
+                        <div class="nav nav-pills">
+                            <a href="{% url 'listing' listing.id %}" class="nav-item nav-link">View</a>
+                            <a href="{% url 'bid' listing.id %}" class="nav-item nav-link">Bid</a>
+                            <a href="#" class="nav-item nav-link">Watchlist</a>
+                            <a class="nav-item nav-link" href="#">End</a>  
+                        </div>
                     </div>
                 </div>
             </span>

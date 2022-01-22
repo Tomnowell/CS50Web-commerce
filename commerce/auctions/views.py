@@ -84,6 +84,10 @@ def is_user_also_auctioneer(request, listing):
     return False
 
 
+def is_user_also_highest_bidder(user, bid):
+    return user == bid.bidder
+
+
 def show_listing(request, id):
     if request.method == "GET":
         return show_listing_GET(request, id)
@@ -96,8 +100,9 @@ def show_listing(request, id):
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
     current_bid = current_listing.get_current_bid()
+    is_highest_bidder = is_user_also_highest_bidder(
+        request.user, current_bid)
     current_listing_category = current_listing.category
-
     end_button_visibility = "disabled"
     aria_disabled = "true"
     tab_index = "-1"
@@ -108,12 +113,13 @@ def show_listing_GET(request, listing_id):
         tab_index = "1"
 
     return render(request, "auctions/listing.html", {"listing": current_listing,
-                                                     "current_bid": current_bid,
+                                                     "current_bid_amount": current_bid.amount,
                                                      "visibility": end_button_visibility,
                                                      "aria_dissabled": aria_disabled,
                                                      "tab_index": tab_index,
                                                      "categories": Listing.CATEGORIES,
-                                                     "current_listing_category": current_listing_category})
+                                                     "current_listing_category": current_listing_category,
+                                                     "is_highest_bidder": is_highest_bidder})
 
 
 def show_listing_POST(request, listing_id):

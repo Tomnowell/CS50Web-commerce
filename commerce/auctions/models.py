@@ -4,6 +4,14 @@ from django.db import models
 from datetime import datetime, timedelta, timezone
 
 
+class User(AbstractUser):
+    watchlist = models.ManyToManyField(
+        "Listing", related_name="watchers")
+
+    def __str__(self):
+        return self.username
+
+
 class Listing(models.Model):
     CATEGORIES = [
         ("AUTOMOTIVE", "Automotive"),
@@ -43,12 +51,11 @@ class Listing(models.Model):
         return self.open
 
     def get_current_bid(self):
+        """[returns: current highest bid (Bid object)]
+        """
         bid_list = self.get_all_bids()
-        current_bid = 0
-        for bid in bid_list:
-            if bid.amount > current_bid:
-                current_bid = bid.amount
-        return(current_bid)
+
+        return max(bid_list)
 
     def get_all_bids(self):
         bids = Bid.objects.filter(item=self)
@@ -61,17 +68,6 @@ class Listing(models.Model):
         return self.auctioneer == other.auctioneer
 
 
-class User(AbstractUser):
-
-    watchlist = models.ManyToManyField(
-        Listing, on_delete=models.CASCADE, related_name="watchers")
-
-    bids = models.ForeignKey(Bid, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.username
-
-
 class Bid(models.Model):
     bidder = models.ForeignKey(
         User, on_delete=models.CASCADE)
@@ -80,10 +76,25 @@ class Bid(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)
 
-    def __eq__(self, Bid):
-        if self.amount == Bid.amount:
+    def __eq__(self, other):
+        if self.amount == other.amount:
             return True
         return False
+
+    def __ne__(self, other):
+        return (self.amount != other.amount)
+
+    def __lt__(self, other):
+        return (self.amount < other.amount)
+
+    def __le__(self, other):
+        return (self.amount <= other.amount)
+
+    def __gt__(self, other):
+        return (self.amount > other.amount)
+
+    def __ge__(self, other):
+        return (self.amount >= other.amount)
 
     def __str__(self):
         return f"{str(self.bidder.username)}->{str(self.item.name)}->{str(self.amount)}"
@@ -95,18 +106,9 @@ class Comment(models.Model):
     item = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="commented_listing")
     comment = models.TextField(blank=True, max_length=1024)
-    votes = models.IntegerField()
 
     def __str__(self):
         return f"{str(self.commentor.username)}->{str(self.comment)}->votes:{str(self.votes)}"
-
-
-class Watchlist(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="watchlist")
-
-    models.ForeignKey(
-        Listing, on_delete=models.CASCADE, related_name="watched_item")
 
 
 class Review(models.Model):

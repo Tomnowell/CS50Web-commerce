@@ -4,11 +4,6 @@ from django.db import models
 from datetime import datetime, timedelta, timezone
 
 
-class User(AbstractUser):
-    def __str__(self):
-        return self.username
-
-
 class Listing(models.Model):
     CATEGORIES = [
         ("AUTOMOTIVE", "Automotive"),
@@ -37,9 +32,15 @@ class Listing(models.Model):
         default=datetime.now(timezone.utc), editable=False)
     end_time = models.DateTimeField(
         default=(datetime.now(timezone.utc) + timedelta(7)))
+    open = models.BooleanField(default=True)
 
     def increment_bid_number(self):
         self.number_of_bids += 1
+
+    def is_open(self):
+        if datetime.now(timezone.utc) > end_time:
+            self.open = False
+        return self.open
 
     def get_current_bid(self):
         bid_list = self.get_all_bids()
@@ -58,6 +59,17 @@ class Listing(models.Model):
 
     def __eq__(self, other):
         return self.auctioneer == other.auctioneer
+
+
+class User(AbstractUser):
+
+    watchlist = models.ManyToManyField(
+        Listing, on_delete=models.CASCADE, related_name="watchers")
+
+    bids = models.ForeignKey(Bid, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.username
 
 
 class Bid(models.Model):
@@ -92,7 +104,8 @@ class Comment(models.Model):
 class Watchlist(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="watchlist")
-    watch_list = models.ForeignKey(
+
+    models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="watched_item")
 
 

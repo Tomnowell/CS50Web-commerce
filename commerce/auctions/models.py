@@ -38,7 +38,7 @@ class Listing(models.Model):
         self.number_of_bids += 1
 
     def is_open(self):
-        if datetime.now(timezone.utc) > end_time:
+        if datetime.now(timezone.utc) > self.end_time:
             self.open = False
         return self.open
 

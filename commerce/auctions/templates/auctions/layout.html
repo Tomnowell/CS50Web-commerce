@@ -10,30 +10,44 @@
     <body>
         <div class="container">
             <div class="row">
-                <h1>T-Bay</h1>
-                <div>
-                    {% if user.is_authenticated %}
-                        Signed in as <strong>{{ user.username }}</strong>.
-                    {% else %}
-                        Not signed in.
-                    {% endif %}
+                <div class="col-md-12">
+                    <h1>T-Bay</h1>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3">
+                <div class="col-md-12">
+                    <div>
+                        {% if user.is_authenticated %}
+                            Signed in as <strong> {{ user.username }}</strong>.
+                        {% else %}
+                            Not signed in.
+                        {% endif %}
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
                     {% include "auctions/includes/nav.html" %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    {% include "auctions/includes/categories_nav.html" %}
                 </div>
                 <div class="col-md-9">
                     {% block body %}
                     {% endblock %}
                 </div>
             </div>
-            
-        </div>
-        <div class="row">
-            {% block footer %}
-                {% include "auctions/includes/messages.html" %}
-            {% endblock %}
+            <div class="row">
+                <div class="col-md-12">
+                 
+                    {% block footer %}
+                        {% include "auctions/includes/messages.html" %}
+                    {% endblock %}
+                </div>
+            </div>
         </div>
     </body>
 </html>

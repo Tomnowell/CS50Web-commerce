@@ -15,10 +15,14 @@ from .forms import *
 
 
 def index(request):
-
     listings = Listing.objects.all()
+    return main_view(request, listings)
+
+
+def main_view(request, listings):
     return render(request, "auctions/index.html", {
-        'listings': listings
+        'listings': listings,
+        "categories": Listing.CATEGORIES
     })
 
 
@@ -216,3 +220,8 @@ def add_listing(request):
 
     else:
         raise Exception()
+
+
+def category_view(request, category):
+    listings = Listing.objects.get(category=category)
+    return main_view(request, listings)

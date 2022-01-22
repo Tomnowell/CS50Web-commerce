@@ -1,21 +1,23 @@
 {% extends "auctions/layout.html" %}
 
-{% block title %}  {listing.name} {% endblock %}
+{% block title %} {listing.name} {% endblock %}
 
 {% block body %}
-    <h1> {{ listing.name }} </h1>
+    <h2> {{ listing.name }} </h2>
+    <div class="container">
 
-    <img class="my-2" src="{{ listing.picture_link }}">
+        <img class="img-thumbnail" src="{{ listing.picture_link }}">
 
-    <p> {{ listing.description }} </p>
+        <p> {{ listing.description }} </p>
 
-    <h5> Auctioneer: <strong>{{ listing.auctioneer }}</strong></h5>
+        <h5> Auctioneer: <strong>{{ listing.auctioneer }}</strong></h5>
 
-    <h5>Starting Bid: {{ listing.starting_bid}}</h5>
-    <h5>Current Bid: {{ listing.get_current_bid }}</h5>
+        <h5>Starting Bid: {{ listing.starting_bid}}</h5>
+        <h5>Current Bid: {{ listing.get_current_bid }}</h5>
 
 
 
-    <div> Auction ends: {{ listing.end_time }}</div>
+        <h5> Auction ends: {{ listing.end_time }}</h5>
+    </div>
     
 {% endblock%}

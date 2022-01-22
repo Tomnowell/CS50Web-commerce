@@ -95,6 +95,8 @@ def show_listing(request, id):
 
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
+    current_bid = current_listing.get_current_bid()
+    current_listing_category = current_listing.category
 
     end_button_visibility = "disabled"
     aria_disabled = "true"
@@ -106,9 +108,12 @@ def show_listing_GET(request, listing_id):
         tab_index = "1"
 
     return render(request, "auctions/listing.html", {"listing": current_listing,
+                                                     "current_bid": current_bid,
                                                      "visibility": end_button_visibility,
                                                      "aria_dissabled": aria_disabled,
-                                                     "tab_index": tab_index})
+                                                     "tab_index": tab_index,
+                                                     "categories": Listing.CATEGORIES,
+                                                     "current_listing_category": current_listing_category})
 
 
 def show_listing_POST(request, listing_id):

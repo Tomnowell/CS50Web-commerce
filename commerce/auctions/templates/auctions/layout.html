@@ -4,34 +4,37 @@
 <html lang="en">
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'font_awesome/css/all.min.css' %}">
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
     </head>
     <body>
-        <div class="container">
-            <div class="row">
+        
+        <div class="container-fluid">
+            <div class="row g-0">
                 <div class="col-md-12">
                     <h1>T-Bay</h1>
                 </div>
             </div>
-            <div class="row">
+            <div class="row g-0">
                 <div class="col-md-12">
-                    <div>
-                        {% if user.is_authenticated %}
-                            Signed in as <strong> {{ user.username }}</strong>.
-                        {% else %}
-                            Not signed in.
-                        {% endif %}
-                    </div>
+                    {% if user.is_authenticated %}
+                        Signed in as <strong> {{ user.username }}</strong>.
+                    {% else %}
+                        Not signed in.
+                    {% endif %}
                     <hr>
                 </div>
             </div>
-            <div class="row">
+            <div class="row g-0">
                 <div class="col-md-12">
                     {% include "auctions/includes/nav.html" %}
                 </div>
             </div>
-            <div class="row">
+            <div class="row g-0">
                 <div class="col-md-3">
                     {% include "auctions/includes/categories_nav.html" %}
                 </div>
@@ -40,14 +43,14 @@
                     {% endblock %}
                 </div>
             </div>
-            <div class="row">
+            <div class="row g-0">
                 <div class="col-md-12">
-                 
                     {% block footer %}
                         {% include "auctions/includes/messages.html" %}
                     {% endblock %}
                 </div>
             </div>
         </div>
+        
     </body>
 </html>

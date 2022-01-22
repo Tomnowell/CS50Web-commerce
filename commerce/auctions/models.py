@@ -54,8 +54,9 @@ class Listing(models.Model):
         """[returns: current highest bid (Bid object)]
         """
         bid_list = self.get_all_bids()
-
-        return max(bid_list)
+        if len(bid_list) > 0:
+            return max(bid_list)
+        raise ValueError
 
     def get_all_bids(self):
         bids = Bid.objects.filter(item=self)

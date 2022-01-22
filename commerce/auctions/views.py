@@ -78,10 +78,8 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-def is_user_also_auctioneer(request, listing):
-    if request.user.username == listing.auctioneer:
-        return True
-    return False
+def is_user_also_auctioneer(user, auctioneer):
+    return str(user) == str(auctioneer)
 
 
 def is_user_also_highest_bidder(user, bid):
@@ -99,27 +97,28 @@ def show_listing(request, id):
 
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
-    current_bid = current_listing.get_current_bid()
-    is_highest_bidder = is_user_also_highest_bidder(
-        request.user, current_bid)
     current_listing_category = current_listing.category
-    end_button_visibility = "disabled"
-    aria_disabled = "true"
-    tab_index = "-1"
 
-    if is_user_also_auctioneer(request, current_listing):
-        end_button_visibility = "active"
-        aria_disabled = "false"
-        tab_index = "1"
+    is_highest_bidder = False
+
+    if current_listing.number_of_bids > 0:
+        current_bid = current_listing.get_current_bid()
+        current_bid_amount = current_bid.amount
+        is_highest_bidder = is_user_also_highest_bidder(
+            request.user, current_bid)
+    else:
+        # No bids!!
+        current_bid_amount = 0
+
+    is_auctioneer = is_user_also_auctioneer(
+        request.user, current_listing.auctioneer)
 
     return render(request, "auctions/listing.html", {"listing": current_listing,
-                                                     "current_bid_amount": current_bid.amount,
-                                                     "visibility": end_button_visibility,
-                                                     "aria_dissabled": aria_disabled,
-                                                     "tab_index": tab_index,
+                                                     "current_bid_amount": current_bid_amount,
                                                      "categories": Listing.CATEGORIES,
                                                      "current_listing_category": current_listing_category,
-                                                     "is_highest_bidder": is_highest_bidder})
+                                                     "is_highest_bidder": is_highest_bidder,
+                                                     "is_auctioneer": is_auctioneer})
 
 
 def show_listing_POST(request, listing_id):

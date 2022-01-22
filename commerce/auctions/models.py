@@ -28,7 +28,7 @@ class Listing(models.Model):
     name = models.CharField(max_length=64)
     auctioneer = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(
-        choices=CATEGORIES, default="Home", max_length=255, blank=False)
+        choices=CATEGORIES, default="HOME", max_length=128, blank=False)
     description = models.TextField(blank=True)
     starting_bid = models.DecimalField(max_digits=8, decimal_places=2)
     number_of_bids = models.IntegerField(default=0)
@@ -54,7 +54,7 @@ class Listing(models.Model):
         return bids
 
     def __str__(self):
-        return f"Listing:{str(self.name)} Owner: {str(self.auctioneer.username)} Start: {str(self.start_time)} End: {str(self.end_time)}"
+        return f"Listing: {str(self.name)} Owner: {str(self.auctioneer.username)} Start: {str(self.start_time)} End: {str(self.end_time)}"
 
     def __eq__(self, other):
         return self.auctioneer == other.auctioneer
@@ -67,14 +67,6 @@ class Bid(models.Model):
         Listing, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date_created = models.DateTimeField(auto_now=True)
-
-    def get_current_bid(item, bid):
-        """[Returns the current bid]
-
-        Args:
-            item ([Listing]): [The Listing details as a Listing model]
-            bid ([Bid]): [the current high bid, could be replaced by this bid]
-        """
 
     def __eq__(self, Bid):
         if self.amount == Bid.amount:
@@ -100,6 +92,8 @@ class Comment(models.Model):
 class Watchlist(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="watchlist")
+    watch_list = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="watched_item")
 
 
 class Review(models.Model):

@@ -1,8 +1,8 @@
 <div>
     <ul class="nav flex-column">
-        {% for category in Listing.categories %}
+        {% for CATEGORY, category in categories %}
             <li>
-                <a href="#" alt="{{category}}">{{category}}</a>
+                <a href="/category/{{CATEGORY}}" alt={{category}}>{{category}}</a>
             </li>
         {% endfor %}
     </ul>

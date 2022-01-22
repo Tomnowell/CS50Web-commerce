@@ -21,7 +21,7 @@ def index(request):
 
 def main_view(request, listings):
     return render(request, "auctions/index.html", {
-        'listings': listings,
+        "listings": listings,
         "categories": Listing.CATEGORIES
     })
 
@@ -76,14 +76,6 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
-
-
-def show_entries(request):
-    if request.method == "GET":
-        # Show all entries
-        return render(request, "auctions/listings.html", {
-            'listings': Listing.objects.all()
-        })
 
 
 def is_user_also_auctioneer(request, listing):
@@ -172,6 +164,7 @@ def bid(request, id):
         return bid_if_GET(request)
 
 
+@login_required(login_url="/login")
 def bid_if_GET(request, id):
     form = bid_form()
     return render(request, "auctions/bid.html", {"form": form,
@@ -193,6 +186,7 @@ def bid_if_POST(request, id):
             new_bid.bidder = bidder
             new_bid.item = item_listing
             new_bid.save()
+            item_listing.increment_bid_number()
             return HttpResponseRedirect("/listing/"+id)
         else:
 
@@ -223,5 +217,10 @@ def add_listing(request):
 
 
 def category_view(request, category):
-    listings = Listing.objects.get(category=category)
-    return main_view(request, listings)
+    listings = Listing.objects.filter(category=category)
+    if len(listings) > 0:
+        return main_view(request, listings)
+    else:
+
+        return HttpResponseRedirect(reverse("index"),
+                                    {"message": messages.info(request, 'Sorry, your search resulted 0 Items!')})

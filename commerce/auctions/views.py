@@ -208,19 +208,6 @@ def is_bid_valid(item_listing, new_bid_amount):
     return False
 
 
-@ login_required(login_url="/login")
-def add_listing(request):
-    if request.method == "GET":
-        return render(request, "auctions/add_listing.html")
-
-    elif request.method == "POST":
-        # process listing
-        return
-
-    else:
-        raise Exception()
-
-
 def category_view(request, category):
     listings = Listing.objects.filter(category=category)
     if len(listings) > 0:
@@ -228,4 +215,5 @@ def category_view(request, category):
     else:
 
         return HttpResponseRedirect(reverse("index"),
-                                    {"message": messages.info(request, 'Sorry, your search resulted 0 Items!', extra_tags="alert alert-primary")})
+                                    {"message": messages.info(request, 'Sorry, your search resulted 0 Items!',
+                                                              extra_tags="alert alert-primary")})

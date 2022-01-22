@@ -195,9 +195,9 @@ def bid_if_POST(request, id):
             return HttpResponseRedirect("/listing/"+id)
         else:
 
-            return HttpResponseRedirect("/listing/"+id, {"message": messages.warning(request, 'Invalid Bid!')})
+            return HttpResponseRedirect("/listing/"+id, {"message": messages.warning(request, 'Invalid Bid!', extra_tags="alert alert-warning")})
 
-    return HttpResponseRedirect("listing/"+id, {"message": messages.warning(request, 'Invalid Form!')})
+    return HttpResponseRedirect("listing/"+id, {"message": messages.warning(request, 'Invalid Form!', extra_tags="alert alert-danger")})
 
 
 def is_bid_valid(item_listing, new_bid_amount):
@@ -228,4 +228,4 @@ def category_view(request, category):
     else:
 
         return HttpResponseRedirect(reverse("index"),
-                                    {"message": messages.info(request, 'Sorry, your search resulted 0 Items!')})
+                                    {"message": messages.info(request, 'Sorry, your search resulted 0 Items!', extra_tags="alert alert-primary")})

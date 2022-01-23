@@ -18,17 +18,16 @@
             <strong>You are the current highest bidder!<strong>
         {% endif %}
         <h5> Auction ends: {{ listing.end_time }}</h5>
+        
         {% if is_auctioneer %}
             <p><strong>You are the auctioneer!</strong></p>
-            <p><strong>If you want, you can</strong></p>
+            <p><strong>If you want, you can:</strong></p>
             <p><a href="#">End auction now</a></p>
-        {% elif not user.isAuthenticated %}
-            
-            Please <a href="{% url 'login' %}">login</a> to place a bid. 
-        
-        {% else %}
+        {% elif user.isAuthenticated %}
             <strong>Enter a bid:</strong>
             {% include "auctions/includes/bid.html" %}
+        {% else %}
+            Please <a href="{% url 'login' %}">login</a> to place a bid.   
         {% endif %}
     </div>
     

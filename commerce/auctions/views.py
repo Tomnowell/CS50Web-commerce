@@ -227,7 +227,6 @@ def category_view(request, category):
 
 def inform_winner(user, listing):
     # Todo
-    print("nothing")
 
 
 def end_listing(listing_id):
@@ -237,4 +236,4 @@ def end_listing(listing_id):
     winning_bid = listing.get_current_bid()
     user = winning_bid.bidder
 
-    # inform_winner(user, listing)
+    inform_winner(user, listing)

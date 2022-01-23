@@ -14,9 +14,11 @@
 
         <h5>Starting Bid: £{{ listing.starting_bid}}</h5>
         <h5>Current Bid: £{{ current_bid_amount }}</h5>
+        
         {% if is_highest_bidder %}
             <strong>You are the current highest bidder!<strong>
         {% endif %}
+        
         <h5> Auction ends: {{ listing.end_time }}</h5>
         
         {% if is_auctioneer %}

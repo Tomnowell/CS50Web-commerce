@@ -254,16 +254,13 @@ def watchlist(request):
 
 
 @login_required
-def add_to_watchlist(request, id):
+def toggle_watchlist(request, id):
     if request == "POST":
         listing = Listing.objects.get(id=id)
         watchlist = request.user.watchlist
-        watchlist.add(listing)
+        if listing not in watchlist:
+            watchlist.add(listing)
+        else:
+            watchlist.remove(listing)
 
-
-@login_required
-def remove_from_watchlist(request, id):
-    if request == "POST":
-        listing = Listing.objects.get(id=id)
-        watchlist = request.user.watchlist
-        watchlist.remove(listing)
+    return HttpResponseRedirect(reverse('watchlist'))

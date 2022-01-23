@@ -4,15 +4,5 @@
 
 
     <h2>Bid</h2>
-
-    <form method="POST">
-        {% csrf_token %}
-        <div>
-            <table>
-                {{ form.as_table }}
-            </table>
-            <input class="btn-primary" type="submit" value="bid" />
-        </div>
-
-    </form>
+    {% include "auctions/includes/bid.html" %}
 {% endblock %}

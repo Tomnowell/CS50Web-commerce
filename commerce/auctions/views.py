@@ -1,5 +1,6 @@
 from asyncio import exceptions
 from email import message
+import mailbox
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -108,7 +109,7 @@ def show_listing_GET(request, listing_id):
             request.user, current_bid)
     else:
         # No bids!!
-        current_bid_amount = 0
+        current_bid_amount = Decimal(0.00)
 
     is_auctioneer = is_user_also_auctioneer(
         request.user, current_listing.auctioneer)
@@ -222,3 +223,17 @@ def category_view(request, category):
         return HttpResponseRedirect(reverse("index"),
                                     {"message": messages.info(request, 'Sorry, your search resulted 0 Items!',
                                                               extra_tags="alert alert-primary")})
+
+
+def inform_winner(user, listing):
+    # Todo
+
+
+def end_listing(listing_id):
+    listing = Listing.objects.get(id=id)
+    listing.open = False
+
+    winning_bid = listing.get_current_bid()
+    user = winning_bid.bidder
+
+    inform_winner(user, listing)

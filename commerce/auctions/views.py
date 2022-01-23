@@ -227,6 +227,7 @@ def category_view(request, category):
 
 def inform_winner(user, listing):
     # Todo
+    print("Todo")
 
 
 def end_listing(listing_id):
@@ -237,3 +238,32 @@ def end_listing(listing_id):
     user = winning_bid.bidder
 
     inform_winner(user, listing)
+
+
+@login_required
+def watchlist(request):
+    listings = request.user.watchlist.all()
+
+    if len(listings) > 0:
+        return main_view(request, listings)
+    else:
+
+        return HttpResponseRedirect(reverse("index"),
+                                    {"message": messages.info(request, 'You have no items on your watchlist!',
+                                                              extra_tags="alert alert-primary")})
+
+
+@login_required
+def add_to_watchlist(request, id):
+    if request == "POST":
+        listing = Listing.objects.get(id=id)
+        watchlist = request.user.watchlist
+        watchlist.add(listing)
+
+
+@login_required
+def remove_from_watchlist(request, id):
+    if request == "POST":
+        listing = Listing.objects.get(id=id)
+        watchlist = request.user.watchlist
+        watchlist.remove(listing)

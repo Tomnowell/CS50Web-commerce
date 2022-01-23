@@ -22,9 +22,12 @@
                     <div class="col-12"> 
                         <div class="nav nav-pills">
                             <a href="{% url 'listing' listing.id %}" class="nav-item nav-link">View</a>
-                            <a href="{% url 'bid' listing.id %}" class="nav-item nav-link">Bid</a>
-                            <a href="#" class="nav-item nav-link">Watchlist</a>
-                            <a class="nav-item nav-link" href="#">End</a>  
+                            {% if user.isregistered %}
+                                <a href="#" class="nav-item nav-link">Watchlist</a>
+                            {% endif %}
+                            {% if listing.auctioneer.id == user.id %}
+                                <a class="nav-item nav-link" href="#">End</a>  
+                            {% endif %}
                         </div>
                     </div>
                 </div>

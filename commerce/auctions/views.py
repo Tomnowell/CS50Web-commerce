@@ -247,9 +247,8 @@ def watchlist(request):
     if len(listings) > 0:
         return main_view(request, listings)
     else:
-
         return HttpResponseRedirect(reverse("index"),
-                                    {"message": messages.info(request, 'You have no items on your watchlist!',
+                                    {"message": messages.info(request, 'You PROBABLY have no items on your watchlist!',
                                                               extra_tags="alert alert-primary")})
 
 
@@ -257,7 +256,7 @@ def watchlist(request):
 def toggle_watchlist(request, id):
     if request == "POST":
         listing = Listing.objects.get(id=id)
-        watchlist = request.user.watchlist
+        watchlist = request.user.watchlist.all()
         if listing not in watchlist:
             watchlist.add(listing)
         else:

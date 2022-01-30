@@ -39,11 +39,6 @@ class Listing(models.Model):
     end_time = models.DateTimeField(
         default=(datetime.now(timezone.utc) + timedelta(7)))
     open = models.BooleanField(default=True)
-    watcherlist = models.ManyToManyField(
-        User,
-        blank=True,
-        null=True,
-        related_name="watchlist")
 
     def increment_bid_number(self):
         self.number_of_bids += 1
@@ -103,6 +98,15 @@ class Bid(models.Model):
 
     def __str__(self):
         return f"{str(self.bidder.username)}->{str(self.item.name)}->{str(self.amount)}"
+
+
+class Watchlist(models.Model):
+    watcher = models.ForeignKey(User, on_delete=models.CASCADE)
+    watched_item = models.ForeignKey(Listing, on_delete=models.CASCADE)
+
+    def get_watchlist(user):
+        watchlist = Watchlist.objects.filter(watcher=user)
+        return watchlist
 
 
 class Comment(models.Model):

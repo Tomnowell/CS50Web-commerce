@@ -242,10 +242,12 @@ def end_listing(listing_id):
 
 @login_required
 def watchlist(request):
-    listings = request.user.watchlist.all()
-    print(listings)
-    if len(listings) > 0:
-        return main_view(request, listings)
+    user = request.user
+
+    watched_items = Watchlist.get_watchlist(user)
+    print(watched_items)
+    if len(watched_items) > 0:
+        return main_view(request, watched_items)
     else:
         return HttpResponseRedirect(reverse("index"),
                                     {"message": messages.info(request, 'You PROBABLY have no items on your watchlist!',
@@ -253,21 +255,18 @@ def watchlist(request):
 
 
 @login_required
-def clear_watchlist(request):
-    user = request.user
-    user.watchlist.clear()
-    return HttpResponseRedirect(reverse('index'))
-
-
-@login_required
 def toggle_watchlist(request, id):
     if request == "POST":
         listing = Listing.objects.get(id=id)
-        watchlist = request.user.watchlist
-        if listing not in watchlist.all():
-            watchlist.add(listing)
+        user = request.user
+        watched_items = Watchlist.get_watchlist(user)
+        if listing not in watched_items():
+            new_watchlist_item = Watchlist()
+            new_watchlist_item.watcher = user
+            new_watchlist_item.watcher = listing
+            new_watchlist_item.save()
         else:
-            watchlist.remove(listing)
-        request.Listing.save()
+            # remove from watchlist
+            print("none")
 
     return HttpResponseRedirect(reverse('watchlist'))

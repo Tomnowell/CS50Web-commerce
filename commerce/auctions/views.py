@@ -240,6 +240,11 @@ def end_listing(listing_id):
     inform_winner(user, listing)
 
 
+def get_watchlist(user):
+    watchlist = Watchlist.objects.filter(watcher=user)
+    return watchlist
+
+
 @login_required
 def watchlist(request):
     user = request.user
@@ -260,13 +265,15 @@ def toggle_watchlist(request, id):
         listing = Listing.objects.get(id=id)
         user = request.user
         watched_items = Watchlist.get_watchlist(user)
+        print(watched_items)
         if listing not in watched_items():
             new_watchlist_item = Watchlist()
             new_watchlist_item.watcher = user
-            new_watchlist_item.watcher = listing
+            new_watchlist_item.watched_item = listing
+            print(new_watchlist_item)
             new_watchlist_item.save()
+
         else:
             # remove from watchlist
             print("none")
-
     return HttpResponseRedirect(reverse('watchlist'))

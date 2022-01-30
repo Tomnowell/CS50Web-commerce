@@ -104,10 +104,6 @@ class Watchlist(models.Model):
     watcher = models.ForeignKey(User, on_delete=models.CASCADE)
     watched_item = models.ForeignKey(Listing, on_delete=models.CASCADE)
 
-    def get_watchlist(user):
-        watchlist = Watchlist.objects.filter(watcher=user)
-        return watchlist
-
 
 class Comment(models.Model):
     commentor = models.ForeignKey(

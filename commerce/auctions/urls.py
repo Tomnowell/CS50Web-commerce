@@ -14,5 +14,7 @@ urlpatterns = [
     path("create", views.create, name="create"),
     path("watchlist", views.watchlist, name="watchlist"),
     path("<str:id>/watchlist", views.toggle_watchlist,
-         name="toggle_watchlist")
+         name="toggle_watchlist"),
+    path("clear_watchlist", views.clear_watchlist, name="clear_watchlist")
+
 ]

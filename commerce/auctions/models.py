@@ -5,8 +5,6 @@ from datetime import datetime, timedelta, timezone
 
 
 class User(AbstractUser):
-    watchlist = models.ManyToManyField(
-        "Listing", related_name="watchers")
 
     def __str__(self):
         return self.username
@@ -41,6 +39,11 @@ class Listing(models.Model):
     end_time = models.DateTimeField(
         default=(datetime.now(timezone.utc) + timedelta(7)))
     open = models.BooleanField(default=True)
+    watcherlist = models.ManyToManyField(
+        User,
+        blank=True,
+        null=True,
+        related_name="watchlist")
 
     def increment_bid_number(self):
         self.number_of_bids += 1
@@ -79,7 +82,8 @@ class Bid(models.Model):
 
     def __eq__(self, other):
         if self.amount == other.amount:
-            return True
+            if self.date_created == other.date_created:
+                return True
         return False
 
     def __ne__(self, other):

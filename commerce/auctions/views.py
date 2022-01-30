@@ -243,7 +243,7 @@ def end_listing(listing_id):
 @login_required
 def watchlist(request):
     listings = request.user.watchlist.all()
-
+    print(listings)
     if len(listings) > 0:
         return main_view(request, listings)
     else:
@@ -253,13 +253,21 @@ def watchlist(request):
 
 
 @login_required
+def clear_watchlist(request):
+    user = request.user
+    user.watchlist.clear()
+    return HttpResponseRedirect(reverse('index'))
+
+
+@login_required
 def toggle_watchlist(request, id):
     if request == "POST":
         listing = Listing.objects.get(id=id)
-        watchlist = request.user.watchlist.all()
-        if listing not in watchlist:
+        watchlist = request.user.watchlist
+        if listing not in watchlist.all():
             watchlist.add(listing)
         else:
             watchlist.remove(listing)
+        request.Listing.save()
 
     return HttpResponseRedirect(reverse('watchlist'))

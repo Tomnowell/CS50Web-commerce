@@ -263,7 +263,9 @@ def watchlist(request):
 def toggle_watchlist(request, id):
     if request == "POST":
         listing = Listing.objects.get(id=id)
+        print(f"listing:{listing}")
         user = request.user
+        print(f"user:{user}")
         watched_items = get_watchlist(user)
         print(watched_items)
         # if listing not in watched_items():

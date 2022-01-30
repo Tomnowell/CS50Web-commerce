@@ -61,7 +61,7 @@ class Listing(models.Model):
         return bids
 
     def __str__(self):
-        return f"Listing: {str(self.name)} Owner: {str(self.auctioneer.username)} Start: {str(self.start_time)} End: {str(self.end_time)}"
+        return f"Listing: {str(self.name)}"
 
     def __eq__(self, other):
         return self.auctioneer == other.auctioneer

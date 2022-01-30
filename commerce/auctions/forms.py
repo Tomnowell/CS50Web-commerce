@@ -1,7 +1,7 @@
 from cProfile import label
 from unicodedata import category
 from django.forms import ModelForm
-from .models import Listing, Bid, Comment, Review
+from .models import Listing, Bid, Comment
 
 
 class listing_form(ModelForm):

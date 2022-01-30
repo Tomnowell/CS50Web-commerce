@@ -118,13 +118,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{str(self.commentor.username)}->{str(self.comment)}->votes:{str(self.votes)}"
-
-
-class Review(models.Model):
-    review = models.TextField(max_length=1024)
-    reviewer = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="user")
-    listing = models.ForeignKey(
-        Listing, on_delete=models.CASCADE, related_name="bids")
-    time = models.DateTimeField(auto_now_add=True)
-    stars = models.IntegerField()

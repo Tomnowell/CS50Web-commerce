@@ -249,7 +249,7 @@ def get_watchlist(user):
 def watchlist(request):
     user = request.user
 
-    watched_items = Watchlist.get_watchlist(user)
+    watched_items = get_watchlist(user)
     print(watched_items)
     if len(watched_items) > 0:
         return main_view(request, watched_items)
@@ -264,16 +264,16 @@ def toggle_watchlist(request, id):
     if request == "POST":
         listing = Listing.objects.get(id=id)
         user = request.user
-        watched_items = Watchlist.get_watchlist(user)
+        watched_items = get_watchlist(user)
         print(watched_items)
-        if listing not in watched_items():
-            new_watchlist_item = Watchlist()
-            new_watchlist_item.watcher = user
-            new_watchlist_item.watched_item = listing
-            print(new_watchlist_item)
-            new_watchlist_item.save()
+        # if listing not in watched_items():
+        new_watchlist_item = Watchlist()
+        new_watchlist_item.watcher = user
+        new_watchlist_item.watched_item = listing
+        print(new_watchlist_item)
+        new_watchlist_item.save()
 
-        else:
-            # remove from watchlist
-            print("none")
+        # else:
+        # remove from watchlist
+        #  print("none")
     return HttpResponseRedirect(reverse('watchlist'))

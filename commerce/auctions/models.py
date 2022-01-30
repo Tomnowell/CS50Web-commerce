@@ -101,8 +101,12 @@ class Bid(models.Model):
 
 
 class Watchlist(models.Model):
-    watcher = models.ForeignKey(User, on_delete=models.CASCADE)
-    watched_item = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    watcher = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE)
+    watched_item = models.ForeignKey(
+        Listing,
+        on_delete=models.CASCADE)
 
 
 class Comment(models.Model):

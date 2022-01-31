@@ -270,14 +270,14 @@ def toggle_watchlist(request, id):
         print(f"user:{user}")
         watched_items = get_watchlist(user)
         print(watched_items)
-        # if listing not in watched_items():
-        new_watchlist_item = Watchlist()
-        new_watchlist_item.watcher = user
-        new_watchlist_item.watched_item = listing
-        print(new_watchlist_item)
-        new_watchlist_item.save()
+        if listing not in watched_items():
+            new_watchlist_item = Watchlist()
+            new_watchlist_item.watcher = user
+            new_watchlist_item.watched_item = listing
+            print(new_watchlist_item)
+            new_watchlist_item.save()
 
-    else:
-        # remove from watchlist
-        print("none")
+        else:
+            # remove from watchlist
+            print("none")
     return HttpResponseRedirect(reverse('watchlist'))

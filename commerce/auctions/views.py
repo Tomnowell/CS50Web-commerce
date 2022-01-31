@@ -113,13 +113,16 @@ def show_listing_GET(request, listing_id):
 
     is_auctioneer = is_user_also_auctioneer(
         request.user, current_listing.auctioneer)
+    context = {
+        "listing": current_listing,
+        "current_bid_amount": current_bid_amount,
+        "categories": Listing.CATEGORIES,
+        "current_listing_category": current_listing_category,
+        "is_highest_bidder": is_highest_bidder,
+        "is_auctioneer": is_auctioneer
+    }
 
-    return render(request, "auctions/listing.html", {"listing": current_listing,
-                                                     "current_bid_amount": current_bid_amount,
-                                                     "categories": Listing.CATEGORIES,
-                                                     "current_listing_category": current_listing_category,
-                                                     "is_highest_bidder": is_highest_bidder,
-                                                     "is_auctioneer": is_auctioneer})
+    return render(request, "auctions/listing.html", context)
 
 
 def show_listing_POST(request, listing_id):
@@ -219,13 +222,19 @@ def is_bid_valid(item_listing, new_bid_amount):
 
 def category_view(request, category):
     listings = Listing.objects.filter(category=category)
-    if len(listings) > 0:
-        return main_view(request, listings)
-    else:
 
-        return HttpResponseRedirect(reverse("index"),
-                                    {"message": messages.info(request, 'Sorry, your search resulted 0 Items!',
-                                                              extra_tags="alert alert-primary")})
+    if len(listings) > 0:
+        context = {
+            "title": category,
+            "listings": listings
+        }
+        return main_view(request, context)
+    else:
+        context = {
+            "message": messages.info(request, 'Sorry, your search resulted 0 Items!',
+                                     extra_tags="alert alert-primary")
+        }
+        return HttpResponseRedirect(reverse("index"), context)
 
 
 def inform_winner(user, listing):
@@ -243,31 +252,38 @@ def end_listing(listing_id):
     inform_winner(user, listing)
 
 
-@login_required
+@ login_required
 def watchlist(request):
     user = request.user
-
     watchlist = user.watchlist
-    if len(watchlist.all()) > 0:
+    print(watchlist)
+    listings = watchlist.all()
+    print(listings)
+    if len(listings) > 0:
         context = {
             "title": "Watchlist",
-            "listings": watchlist.all()
+            "listings": listings
         }
         return main_view(request, context)
     else:
-        return HttpResponseRedirect(reverse("index"),
-                                    {"message": messages.info(request, 'You PROBABLY have no items on your watchlist!',
-                                                              extra_tags="alert alert-primary")})
+        context = {
+            "message": messages.info(request, 'You have no items on your watchlist!',
+                                     extra_tags="alert alert-primary")
+        }
+        return HttpResponseRedirect(reverse("index"), context)
 
 
-@login_required
+@ login_required
 def toggle_watchlist(request, id):
     if request.method == "POST":
         listing = Listing.objects.get(id=id)
         user = request.user
         watchlist = user.watchlist
         if listing not in watchlist.all():
+            print(f"Add {listing} to {watchlist}")
             watchlist.add(listing)
         else:
+            print(f"Remove {listing} from {watchlist}")
             watchlist.remove(listing)
+        user.save()
     return HttpResponseRedirect(reverse('listing', kwargs={'id': id}))

@@ -1,4 +1,5 @@
 from asyncio import exceptions
+from cmd import IDENTCHARS
 from email import message
 import mailbox
 from django.contrib.auth import authenticate, login, logout
@@ -261,7 +262,8 @@ def watchlist(request):
 
 @login_required
 def toggle_watchlist(request, id):
-    if request == "POST":
+    if request.method == "POST":
+        print(id)
         listing = Listing.objects.get(id=id)
         print(f"listing:{listing}")
         user = request.user
@@ -275,7 +277,7 @@ def toggle_watchlist(request, id):
         print(new_watchlist_item)
         new_watchlist_item.save()
 
-        # else:
+    else:
         # remove from watchlist
-        #  print("none")
+        print("none")
     return HttpResponseRedirect(reverse('watchlist'))

@@ -10,10 +10,11 @@ urlpatterns = [
     path("listing/<str:id>", views.show_listing, name="listing"),
     path("listing/<str:id>/bid", views.bid, name="bid"),
     path("listing/<str:id>/end", views.end_listing, name="end_listing"),
+    path("listing/<str:id>/watch", views.toggle_watchlist,
+         name="toggle_watchlist"),
     path("category/<str:category>", views.category_view, name="category"),
     path("create", views.create, name="create"),
-    path("watchlist", views.watchlist, name="watchlist"),
-    path("<str:id>/watchlist", views.toggle_watchlist,
-         name="toggle_watchlist")
+    path("watchlist", views.watchlist, name="watchlist")
+
 
 ]

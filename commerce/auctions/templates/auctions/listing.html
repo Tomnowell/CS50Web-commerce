@@ -28,9 +28,9 @@
         {% elif user.is_authenticated %}
             <strong>Enter a bid:</strong>
             {% include "auctions/includes/bid.html" %}
-            <form method="POST" action="{%url 'toggle_watchlist' listing.id %}">
+            <form method="POST" action="{% url 'toggle_watchlist' listing.id %}">
                 {% csrf_token %}
-                <input class="btn btn-sm" type="submit" value="Toggle watchlist">
+                <input class="btn btn-secondary" type="submit" value="Toggle watchlist">
             </form>
         {% else %}
             Please <a href="{% url 'login' %}">login</a> to place a bid.   

@@ -279,5 +279,8 @@ def toggle_watchlist(request, id):
 
         else:
             # remove from watchlist
+            watchlist_item = get_model(
+                watched_item == listing, watcher == user)
+            watched_item.delete()
             print("none")
     return HttpResponseRedirect(reverse('watchlist'))

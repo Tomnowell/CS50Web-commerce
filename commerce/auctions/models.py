@@ -6,6 +6,11 @@ from datetime import datetime, timedelta, timezone
 
 class User(AbstractUser):
 
+    Watchlist = models.ManyToManyField(
+        'Listing', blank=True,
+        null=True,
+        related_name="watchers")
+
     def __str__(self):
         return self.username
 

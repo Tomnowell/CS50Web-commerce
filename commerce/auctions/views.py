@@ -18,19 +18,18 @@ from .forms import *
 
 def index(request):
     listings = Listing.objects.all()
-    return main_view(request, listings)
+    context = {"title": "Active Listings",
+               "listings": listings}
+    return main_view(request, context)
 
 
-def main_view(request, listings):
-    return render(request, "auctions/index.html", {
-        "listings": listings,
-        "categories": Listing.CATEGORIES
-    })
+def main_view(request, context):
+    context["categories"] = Listing.CATEGORIES
+    return render(request, "auctions/index.html", context)
 
 
 def login_view(request):
     if request.method == "POST":
-
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -204,7 +203,10 @@ def bid_if_POST(request, id):
 
             return HttpResponseRedirect("/listing/"+id, {"message": messages.warning(request, 'Invalid Bid!', extra_tags="alert alert-warning")})
 
-    return HttpResponseRedirect("listing/"+id, {"message": messages.warning(request, 'Invalid Form!', extra_tags="alert alert-danger")})
+    return HttpResponseRedirect("listing/"+id,
+                                {"message": messages.warning(request,
+                                                             'Invalid Form!',
+                                                             extra_tags="alert alert-danger")})
 
 
 def is_bid_valid(item_listing, new_bid_amount):
@@ -241,19 +243,17 @@ def end_listing(listing_id):
     inform_winner(user, listing)
 
 
-def get_watchlist(user):
-    watchlist = Watchlist.objects.filter(watcher=user)
-    return watchlist
-
-
 @login_required
 def watchlist(request):
     user = request.user
 
-    watched_items = get_watchlist(user)
-    print(watched_items)
-    if len(watched_items) > 0:
-        return main_view(request, watched_items)
+    watchlist = user.watchlist
+    if len(watchlist.all()) > 0:
+        context = {
+            "title": "Watchlist",
+            "listings": watchlist.all()
+        }
+        return main_view(request, context)
     else:
         return HttpResponseRedirect(reverse("index"),
                                     {"message": messages.info(request, 'You PROBABLY have no items on your watchlist!',
@@ -266,9 +266,8 @@ def toggle_watchlist(request, id):
         listing = Listing.objects.get(id=id)
         user = request.user
         watchlist = user.watchlist
-        if listing not in watchlist:
+        if listing not in watchlist.all():
             watchlist.add(listing)
-
         else:
             watchlist.remove(listing)
-    return HttpResponseRedirect(reverse('watchlist'))
+    return HttpResponseRedirect(reverse('listing', kwargs={'id': id}))

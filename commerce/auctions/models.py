@@ -7,8 +7,8 @@ from datetime import datetime, timedelta, timezone
 class User(AbstractUser):
 
     watchlist = models.ManyToManyField(
-        'Listing', blank=True,
-        null=True,
+        'Listing',
+        blank=True,
         related_name="watchers")
 
     def __str__(self):

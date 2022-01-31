@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 class User(AbstractUser):
 
-    Watchlist = models.ManyToManyField(
+    watchlist = models.ManyToManyField(
         'Listing', blank=True,
         null=True,
         related_name="watchers")
@@ -103,15 +103,6 @@ class Bid(models.Model):
 
     def __str__(self):
         return f"{str(self.bidder.username)}->{str(self.item.name)}->{str(self.amount)}"
-
-
-class Watchlist(models.Model):
-    watcher = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE)
-    watched_item = models.ForeignKey(
-        Listing,
-        on_delete=models.CASCADE)
 
 
 class Comment(models.Model):

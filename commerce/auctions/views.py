@@ -263,24 +263,12 @@ def watchlist(request):
 @login_required
 def toggle_watchlist(request, id):
     if request.method == "POST":
-        print(id)
         listing = Listing.objects.get(id=id)
-        print(f"listing:{listing}")
         user = request.user
-        print(f"user:{user}")
-        watched_items = get_watchlist(user)
-        print(watched_items)
-        if listing not in watched_items():
-            new_watchlist_item = Watchlist()
-            new_watchlist_item.watcher = user
-            new_watchlist_item.watched_item = listing
-            print(new_watchlist_item)
-            new_watchlist_item.save()
+        watchlist = user.watchlist
+        if listing not in watchlist:
+            watchlist.add(listing)
 
         else:
-            # remove from watchlist
-            watchlist_item = get_model(
-                watched_item == listing, watcher == user)
-            watched_item.delete()
-            print("none")
+            watchlist.remove(listing)
     return HttpResponseRedirect(reverse('watchlist'))

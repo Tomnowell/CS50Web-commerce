@@ -40,9 +40,10 @@ class Listing(models.Model):
         default=(datetime.now(timezone.utc) + timedelta(7)))
     open = models.BooleanField(default=True)
 
-    watchlist = models.ManyToManyField(
+    watcher = models.ManyToManyField(
         User,
-        blank=True)
+        blank=True,
+        related_name="watchlist")
 
     def increment_bid_number(self):
         self.number_of_bids += 1

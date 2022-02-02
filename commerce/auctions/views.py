@@ -273,17 +273,18 @@ def watchlist(request):
         return HttpResponseRedirect(reverse("index"), context)
 
 
-@ login_required
+@login_required
 def toggle_watchlist(request, id):
     if request.method == "POST":
         listing = Listing.objects.get(id=id)
         user = request.user
         watchlist = user.watchlist
-        if listing not in watchlist.all():
+        print(watchlist)
+        if listing in watchlist.all():
             print(f"Add {listing} to {watchlist}")
-            watchlist.add(listing)
+            watchlist.remove(listing)
         else:
             print(f"Remove {listing} from {watchlist}")
-            watchlist.remove(listing)
+            watchlist.add(listing)
         user.save()
     return HttpResponseRedirect(reverse('listing', kwargs={'id': id}))

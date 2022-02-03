@@ -96,10 +96,16 @@ def show_listing(request, id):
         return show_listing_GET(request, id)
 
 
+def get_comments(item_id):
+    current_item = Listing.objects.get(id=item_id)
+    all_comments = Comment.objects.get(item=current_item)
+    return all_comments
+
+
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
     current_listing_category = current_listing.category
-
+    empty_comment_form = comment_form()
     is_highest_bidder = False
 
     if current_listing.number_of_bids > 0:
@@ -113,13 +119,18 @@ def show_listing_GET(request, listing_id):
 
     is_auctioneer = is_user_also_auctioneer(
         request.user, current_listing.auctioneer)
+
+    all_comments = get_comments(listing_id)
+
     context = {
         "listing": current_listing,
         "current_bid_amount": current_bid_amount,
         "categories": Listing.CATEGORIES,
         "current_listing_category": current_listing_category,
         "is_highest_bidder": is_highest_bidder,
-        "is_auctioneer": is_auctioneer
+        "is_auctioneer": is_auctioneer,
+        "comment_form": empty_comment_form,
+        "all_comments": all_comments
     }
 
     return render(request, "auctions/listing.html", context)
@@ -127,7 +138,21 @@ def show_listing_GET(request, listing_id):
 
 def show_listing_POST(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
-    return render(request, "auctions/listing.html", {"listing": current_listing})
+    comment = comment_form(request.POST)
+    if comment.is_valid():
+        new_comment = Comment()
+        new_comment.commentor = request.user
+        new_comment.item = : Listing.objects.get(id=listing_id)
+        new_comment.comment = comment.cleaned_data['comment']
+        new_comment.save()
+
+    all_comments = get_comments(listing_id)
+    context = {
+        "listing": current_listing,
+        "comment_form": comment_form(),
+        "comments": all_comments
+    }
+    return render(request, "auctions/listing.html", context)
 
 
 def create(request):

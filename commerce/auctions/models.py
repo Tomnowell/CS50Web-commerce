@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 
 
 class User(AbstractUser):
-
     def __str__(self):
         return self.username
 
@@ -40,7 +39,7 @@ class Listing(models.Model):
         default=(datetime.now(timezone.utc) + timedelta(7)))
     open = models.BooleanField(default=True)
 
-    watcher = models.ManyToManyField(
+    watchlist = models.ManyToManyField(
         User,
         blank=True,
         related_name="watchlist")
@@ -66,10 +65,10 @@ class Listing(models.Model):
         return bids
 
     def __str__(self):
-        return f"Listing: {str(self.name)}"
+        return f"{str(self.name)}"
 
     def __eq__(self, other):
-        return self.auctioneer == other.auctioneer
+        return self.auctioneer == other.auctioneer and self.id == other.id
 
 
 class Bid(models.Model):

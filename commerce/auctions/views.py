@@ -1,5 +1,6 @@
 from asyncio import exceptions
 from cmd import IDENTCHARS
+from contextlib import nullcontext
 from email import message
 import mailbox
 from django.contrib.auth import authenticate, login, logout
@@ -119,8 +120,10 @@ def show_listing_GET(request, listing_id):
 
     is_auctioneer = is_user_also_auctioneer(
         request.user, current_listing.auctioneer)
-
-    all_comments = get_comments(listing_id)
+    try:
+        all_comments = get_comments(listing_id)
+    except (Comment.DoesNotExist):
+        all_comments = "There are no comments for this item"
 
     context = {
         "listing": current_listing,
@@ -142,7 +145,7 @@ def show_listing_POST(request, listing_id):
     if comment.is_valid():
         new_comment = Comment()
         new_comment.commentor = request.user
-        new_comment.item = : Listing.objects.get(id=listing_id)
+        new_comment.item = Listing.objects.get(id=listing_id)
         new_comment.comment = comment.cleaned_data['comment']
         new_comment.save()
 
@@ -279,10 +282,7 @@ def end_listing(listing_id):
 
 @ login_required
 def watchlist(request):
-    user = request.user
-    watchlist = user.watchlist
-    print(watchlist)
-    listings = watchlist.all()
+    listings = request.user.watchlist.all()
     print(listings)
     if len(listings) > 0:
         context = {
@@ -302,14 +302,14 @@ def watchlist(request):
 def toggle_watchlist(request, id):
     if request.method == "POST":
         listing = Listing.objects.get(id=id)
-        user = request.user
-        watchlist = user.watchlist
-        print(watchlist)
-        if listing in watchlist.all():
-            print(f"Add {listing} to {watchlist}")
+        print(f"Adding or removing listing{listing}")
+        watchlist = request.user.watchlist
+        all_watchlist = request.user.watchlist.all()
+        print(f"all_watchlist {all_watchlist}")
+        if listing in all_watchlist:
+            print(f"Remove {listing} from {watchlist}")
             watchlist.remove(listing)
         else:
-            print(f"Remove {listing} from {watchlist}")
+            print(f"Add {listing} to {watchlist}")
             watchlist.add(listing)
-        user.save()
     return HttpResponseRedirect(reverse('listing', kwargs={'id': id}))

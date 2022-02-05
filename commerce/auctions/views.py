@@ -3,7 +3,6 @@ from cmd import IDENTCHARS
 from contextlib import nullcontext
 from email import message
 import mailbox
-from operator import truediv
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -104,24 +103,27 @@ def get_comments(item_id):
     return all_comments
 
 
-def show_listing_GET(request, listing_id):
+def set_listing_context(request, listing_id):
+
     current_listing = Listing.objects.get(id=listing_id)
     current_listing_category = current_listing.category
+
     empty_bid_form = bid_form()
     empty_comment_form = comment_form()
-    is_highest_bidder = False
 
-    if current_listing.number_of_bids > 0:
+    is_auctioneer = is_user_also_auctioneer(
+        request.user, current_listing.auctioneer)
+
+    number_of_bids = current_listing.get_bid_count()
+    if number_of_bids > 0:
         current_bid = current_listing.get_current_bid()
         current_bid_amount = current_bid.amount
         is_highest_bidder = is_user_also_highest_bidder(
             request.user, current_bid)
     else:
         # No bids!!
-        current_bid_amount = Decimal(0.00)
+        current_bid_amount = "No bids!"
 
-    is_auctioneer = is_user_also_auctioneer(
-        request.user, current_listing.auctioneer)
     try:
         all_comments = get_comments(listing_id)
     except (Comment.DoesNotExist):
@@ -138,7 +140,13 @@ def show_listing_GET(request, listing_id):
         "comment_form": empty_comment_form,
         "comments": all_comments
     }
+    return context
 
+
+def show_listing_GET(request, listing_id):
+    current_listing = Listing.objects.get(id=listing_id)
+
+    context = set_listing_context(request, listing_id)
     return render(request, "auctions/listing.html", context)
 
 
@@ -158,13 +166,20 @@ def show_listing_POST(request, listing_id):
         bid(request, listing_id)
 
     all_comments = get_comments(listing_id)
-    context = {
-        "listing": current_listing,
-        "bid_form": bid_form(),
-        "comment_form": comment_form(),
-        "comments": all_comments
-    }
+    context = set_listing_context(request, listing_id)
+
     return render(request, "auctions/listing.html", context)
+
+
+def make_bid(user, bid_amount, listing_id):
+    new_bid = Bid()
+    new_bid.bidder = user
+    new_bid.amount = bid_amount
+    item_listing = Listing.objects.get(id=listing_id)
+    new_bid.item = item_listing
+    new_bid.save()
+    item_listing.increment_bid_count()
+    item_listing.save()
 
 
 def create(request):
@@ -203,6 +218,19 @@ def create_if_POST(request):
         raise ValueError
 
 
+def is_bid_valid(item_listing, new_bid_amount):
+    starting_bid = item_listing.starting_bid
+    if item_listing.get_bid_count() > 0:
+        current_bid = item_listing.get_current_bid()
+        current_bid_amount = current_bid.amount
+        if new_bid_amount > (current_bid_amount + Decimal(0.99)):
+            return True
+    elif new_bid_amount >= starting_bid:
+        return True
+    else:
+        return False
+
+
 @login_required(login_url="/login")
 def bid(request, id):
     if request.method == "GET":
@@ -217,48 +245,44 @@ def bid(request, id):
 
 @login_required(login_url="/login")
 def bid_if_GET(request, id):
-    form = bid_form()
-    return render(request, "auctions/bid.html", {"form": form,
-                                                 "id": id})
+    context = {
+        "bid_form": bid_form(),
+        "id": id
+    }
+    return render(request, "auctions/bid.html", context)
 
 
 @login_required(login_url="/login")
-def bid_if_POST(request, id):
+def bid_if_POST(request, listing_id):
     form = bid_form(request.POST)
+    user = request.user
 
     if form.is_valid():
-        item_listing = Listing.objects.get(id=id)
+        item_listing = Listing.objects.get(id=listing_id)
         bidder = request.user
-        new_bid_amount = Decimal(form.cleaned_data['amount'])
+        new_bid_amount = form.cleaned_data['amount']
 
         if is_bid_valid(item_listing, new_bid_amount):
-            new_bid = Bid()
-            new_bid.amount = new_bid_amount
-            new_bid.bidder = bidder
-            new_bid.item = item_listing
-            new_bid.save()
-            item_listing.increment_bid_number()
-            return HttpResponseRedirect("/listing/"+id)
+            make_bid(bidder, new_bid_amount, listing_id)
+
+            context = {
+                "bid_form": bid_form()
+            }
+            return HttpResponseRedirect("/listing/"+listing_id, context)
         else:
+            context = {
+                "message": messages.warning(request, 'Invalid Bid!', extra_tags="alert alert-warning"),
+                "bid_form": bid_form()
+            }
+            return HttpResponseRedirect("/listing/"+listing_id, context)
 
-            return HttpResponseRedirect("/listing/"+id, {"message": messages.warning(request, 'Invalid Bid!', extra_tags="alert alert-warning")})
-
-    return HttpResponseRedirect("listing/"+id,
-                                {"message": messages.warning(request,
-                                                             'Invalid Form!',
-                                                             extra_tags="alert alert-danger")})
-
-
-def is_bid_valid(item_listing, new_bid_amount):
-    starting_bid = item_listing.starting_bid
-    if item_listing.get_bid_count() > 0:
-        current_bid_amount = item_listing.get_current_bid()
-        if new_bid_amount > (current_bid_amount + Decimal(0.99)):
-            return True
-    elif new_bid_amount >= starting_bid:
-        return True
-    else:
-        return False
+    context = {
+        "message": messages.warning(request, 'Invalid Form!',
+                                    extra_tags="alert alert-danger"),
+        "bid_form": bid_form()
+    }
+    return HttpResponseRedirect("listing/"+listing_id,
+                                context)
 
 
 def category_view(request, category):

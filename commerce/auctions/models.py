@@ -52,24 +52,22 @@ class Listing(models.Model):
     def is_listing_expired(self):
         if datetime.now(timezone.utc) > self.end_time:
             self.open = False
-
         return self.open
 
     def get_current_bid(self):
         """[returns: current highest bid (Bid object)]
         """
         bid_list = self.get_all_bids()
-        if len(bid_list) > 0:
-            return Decimal(max(bid_list))
-        else:
-            return Decimal(0.00)
+        try:
+            return max(bid_list)
+        except ValueError:
+            return None
 
     def get_bid_count(self):
         return self.number_of_bids
 
     def get_all_bids(self):
-        bids = Bid.objects.filter(item=self)
-        return bids
+        return Bid.objects.filter(item=self)
 
     def __str__(self):
         return f"{str(self.name)}"
@@ -87,25 +85,22 @@ class Bid(models.Model):
     date_created = models.DateTimeField(auto_now=True)
 
     def __eq__(self, other):
-        if self.amount == other.amount:
-            if self.date_created == other.date_created:
-                return True
-        return False
+        return self.amount == other.amount
 
     def __ne__(self, other):
-        return (self.amount != other.amount)
+        return self.amount != other.amount
 
     def __lt__(self, other):
-        return (self.amount < other.amount)
+        return self.amount < other.amount
 
     def __le__(self, other):
-        return (self.amount <= other.amount)
+        return self.amount <= other.amount
 
     def __gt__(self, other):
-        return (self.amount > other.amount)
+        return self.amount > other.amount
 
     def __ge__(self, other):
-        return (self.amount >= other.amount)
+        return self.amount >= other.amount
 
     def __str__(self):
         return f"{str(self.bidder.username)}->{str(self.item.name)}->{str(self.amount)}"
@@ -115,7 +110,7 @@ class Comment(models.Model):
     commentor = models.ForeignKey(
         User, on_delete=models.CASCADE)
     item = models.ForeignKey(
-        Listing, on_delete=models.CASCADE, related_name="commented_listing")
+        Listing, on_delete=models.CASCADE)
     comment = models.TextField(blank=True, max_length=1024)
     date_created = models.DateTimeField(auto_now=True)
 

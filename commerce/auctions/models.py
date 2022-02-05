@@ -3,6 +3,8 @@ from django.db import models
 
 from datetime import datetime, timedelta, timezone
 
+from decimal import Decimal
+
 
 class User(AbstractUser):
     def __str__(self):
@@ -44,12 +46,13 @@ class Listing(models.Model):
         blank=True,
         related_name="watchlist")
 
-    def increment_bid_number(self):
+    def increment_bid_count(self):
         self.number_of_bids += 1
 
-    def is_open(self):
+    def is_listing_expired(self):
         if datetime.now(timezone.utc) > self.end_time:
             self.open = False
+
         return self.open
 
     def get_current_bid(self):
@@ -57,8 +60,12 @@ class Listing(models.Model):
         """
         bid_list = self.get_all_bids()
         if len(bid_list) > 0:
-            return max(bid_list)
-        raise ValueError
+            return Decimal(max(bid_list))
+        else:
+            return Decimal(0.00)
+
+    def get_bid_count(self):
+        return self.number_of_bids
 
     def get_all_bids(self):
         bids = Bid.objects.filter(item=self)
@@ -68,7 +75,7 @@ class Listing(models.Model):
         return f"{str(self.name)}"
 
     def __eq__(self, other):
-        return self.auctioneer == other.auctioneer and self.id == other.id
+        return self.id == other.id
 
 
 class Bid(models.Model):
@@ -110,6 +117,7 @@ class Comment(models.Model):
     item = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="commented_listing")
     comment = models.TextField(blank=True, max_length=1024)
+    date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{str(self.commentor.username)}->{str(self.item)}->{str(self.comment)}"

@@ -3,6 +3,7 @@ from cmd import IDENTCHARS
 from contextlib import nullcontext
 from email import message
 import mailbox
+from operator import truediv
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -100,15 +101,13 @@ def show_listing(request, id):
 def get_comments(item_id):
     current_item = Listing.objects.get(id=item_id)
     all_comments = Comment.objects.filter(item=current_item)
-    print(f"All comments:{all_comments}")
-    for comment in all_comments:
-        print(f"{comment.commentor} says {comment.comment}!")
     return all_comments
 
 
 def show_listing_GET(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
     current_listing_category = current_listing.category
+    empty_bid_form = bid_form()
     empty_comment_form = comment_form()
     is_highest_bidder = False
 
@@ -135,6 +134,7 @@ def show_listing_GET(request, listing_id):
         "current_listing_category": current_listing_category,
         "is_highest_bidder": is_highest_bidder,
         "is_auctioneer": is_auctioneer,
+        "bid_form": empty_bid_form,
         "comment_form": empty_comment_form,
         "comments": all_comments
     }
@@ -145,6 +145,7 @@ def show_listing_GET(request, listing_id):
 def show_listing_POST(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
     comment = comment_form(request.POST or None)
+
     if comment.is_valid() and len(comment.cleaned_data['comment']) > 0:
         new_comment = Comment()
         new_comment.commentor = request.user
@@ -152,9 +153,14 @@ def show_listing_POST(request, listing_id):
         new_comment.comment = comment.cleaned_data['comment']
         new_comment.save()
 
+    new_bid = bid_form(request.POST or None)
+    if new_bid.is_valid:
+        bid(request, listing_id)
+
     all_comments = get_comments(listing_id)
     context = {
         "listing": current_listing,
+        "bid_form": bid_form(),
         "comment_form": comment_form(),
         "comments": all_comments
     }
@@ -244,11 +250,15 @@ def bid_if_POST(request, id):
 
 
 def is_bid_valid(item_listing, new_bid_amount):
-    current_bid_amount = item_listing.get_current_bid()
     starting_bid = item_listing.starting_bid
-    if new_bid_amount > (current_bid_amount + Decimal(0.99)) and new_bid_amount >= starting_bid:
+    if item_listing.get_bid_count() > 0:
+        current_bid_amount = item_listing.get_current_bid()
+        if new_bid_amount > (current_bid_amount + Decimal(0.99)):
+            return True
+    elif new_bid_amount >= starting_bid:
         return True
-    return False
+    else:
+        return False
 
 
 def category_view(request, category):

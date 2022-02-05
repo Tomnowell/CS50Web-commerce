@@ -5,37 +5,53 @@
 {% block body %}
     <h2> {{ listing.name }} </h2>
     <div class="container">
+        <div class="row">
+            <div class="col-9">
+                <img class="img-thumbnail" src="{{ listing.picture_link }}">
 
-        <img class="img-thumbnail" src="{{ listing.picture_link }}">
+                <p> {{ listing.description }} </p>
 
-        <p> {{ listing.description }} </p>
+                <h5> Auctioneer: <strong>{{ listing.auctioneer }}</strong></h5>
 
-        <h5> Auctioneer: <strong>{{ listing.auctioneer }}</strong></h5>
-
-        <h5>Starting Bid: £{{ listing.starting_bid}}</h5>
-        <h5>Current Bid: £{{ current_bid_amount }}</h5>
-        
-        {% if is_highest_bidder %}
-            <strong>You are the current highest bidder!<strong>
-        {% endif %}
-        
-        <h5> Auction ends: {{ listing.end_time }}</h5>
-        
-        {% if is_auctioneer %}
-            <p><strong>You are the auctioneer!</strong></p>
-            <p><strong>If you want, you can:</strong></p>
-            <p><a href="#">End auction now</a></p>
-        {% elif user.is_authenticated %}
-            <strong>Enter a bid:</strong>
-            {% include "auctions/includes/bid.html" %}
-            <form method="POST" action="{% url 'toggle_watchlist' listing.id %}">
-                {% csrf_token %}
-                <input class="btn btn-secondary" type="submit" value="Watch">
-            </form>
-            {% include "auctions/includes/comment.html" %}
-        {% else %}
-            Please <a href="{% url 'login' %}">login</a> to place a bid.   
-        {% endif %}
+                <h5>Starting Bid: £{{ listing.starting_bid}}</h5>
+                <h5>There are {{ listing.number_of_bids }} bids</h5>
+                <h5>Current Bid: £{{ current_bid_amount }}</h5>
+                {% if listing.open == False %}
+                    <h5>AUCTION ENDED!</h5>
+                {% else %}
+                    <h5> Auction ends: {{ listing.end_time }}</h5>
+                {% endif %}
+                
+            </div>
+            <div class="col-3">
+                {% if listing.open == True%}
+                    {% if is_highest_bidder %}
+                        <strong>You are the current highest bidder!<strong>
+                    {% endif %}
+                    {% if is_auctioneer %}
+                        <p><strong>You are the auctioneer!</strong></p>
+                        <p><strong>If you want, you can:</strong></p>
+                        <p><a href="{% url 'end_listing' listing.id %}">End the auction now</a></p>
+                    {% elif user.is_authenticated %}
+                        <strong>Enter a bid:</strong>
+                        {% include "auctions/includes/bid.html" %}
+                        <form method="POST" action="{% url 'toggle_watchlist' listing.id %}">
+                            {% csrf_token %}
+                            <input class="btn btn-secondary" type="submit" value="Watch">
+                        </form>
+                    {% include "auctions/includes/comment.html" %}   
+                    {% else %}
+                        Please <a href="{% url 'login' %}">login</a> to place a bid.   
+                    {% endif %}
+                {% elif is_auctioneer %}
+                    <strong>The auction was won by {{ current_high_bidder }}</strong>
+                {% else %}
+                    <strong>Congratulations!</strong>
+                    <p>You won the auction!</p>
+                    <p> please contact: <strong>{{ listing.auctioneer }}</strong> to finalize payment and delivery instructions</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
     
 {% endblock%}

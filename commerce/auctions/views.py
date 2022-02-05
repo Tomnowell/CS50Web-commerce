@@ -18,7 +18,7 @@ from .forms import *
 
 
 def index(request):
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(open=True)
     context = {"title": "Active Listings",
                "listings": listings}
     return main_view(request, context)
@@ -113,7 +113,7 @@ def set_listing_context(request, listing_id):
 
     is_auctioneer = is_user_also_auctioneer(
         request.user, current_listing.auctioneer)
-
+    is_highest_bidder = False
     number_of_bids = current_listing.get_bid_count()
     if number_of_bids > 0:
         current_bid = current_listing.get_current_bid()
@@ -132,6 +132,7 @@ def set_listing_context(request, listing_id):
     context = {
         "listing": current_listing,
         "current_bid_amount": current_bid_amount,
+        "current_high_bidder": current_bid.bidder,
         "categories": Listing.CATEGORIES,
         "current_listing_category": current_listing_category,
         "is_highest_bidder": is_highest_bidder,
@@ -165,7 +166,6 @@ def show_listing_POST(request, listing_id):
     if new_bid.is_valid:
         bid(request, listing_id)
 
-    all_comments = get_comments(listing_id)
     context = set_listing_context(request, listing_id)
 
     return render(request, "auctions/listing.html", context)
@@ -304,17 +304,23 @@ def category_view(request, category):
 
 def inform_winner(user, listing):
     # Todo
-    print("Todo")
+    print("Winner!! Todo")
 
 
-def end_listing(listing_id):
+@login_required
+def end_listing(request, id):
     listing = Listing.objects.get(id=id)
-    listing.open = False
+    if is_user_also_auctioneer(request.user, listing.auctioneer):
+        listing.close_listing()
+        if listing.get_bid_count() > 0:
+            winning_bid = listing.get_current_bid()
+            user = winning_bid.bidder
+            inform_winner(user, listing)
+        else:
+            # No-one bid ...relist?
+            print("No bids! Todo")
 
-    winning_bid = listing.get_current_bid()
-    user = winning_bid.bidder
-
-    inform_winner(user, listing)
+    return HttpResponseRedirect(reverse('listing', kwargs={"id": id}))
 
 
 @ login_required

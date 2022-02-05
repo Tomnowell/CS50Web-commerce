@@ -48,10 +48,16 @@ class Listing(models.Model):
 
     def increment_bid_count(self):
         self.number_of_bids += 1
+        self.save()
+
+    def close_listing(self):
+        self.open = False
+        self.save()
 
     def is_listing_expired(self):
         if datetime.now(timezone.utc) > self.end_time:
-            self.open = False
+            self.close_listing()
+            self.save()
         return self.open
 
     def get_current_bid(self):

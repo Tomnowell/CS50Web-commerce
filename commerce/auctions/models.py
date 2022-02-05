@@ -112,4 +112,4 @@ class Comment(models.Model):
     comment = models.TextField(blank=True, max_length=1024)
 
     def __str__(self):
-        return f"{str(self.commentor.username)}->{str(self.comment)}->votes:{str(self.votes)}"
+        return f"{str(self.commentor.username)}->{str(self.item)}->{str(self.comment)}"

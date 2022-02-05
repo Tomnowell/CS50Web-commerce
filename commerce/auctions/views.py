@@ -99,7 +99,10 @@ def show_listing(request, id):
 
 def get_comments(item_id):
     current_item = Listing.objects.get(id=item_id)
-    all_comments = Comment.objects.get(item=current_item)
+    all_comments = Comment.objects.filter(item=current_item)
+    print(f"All comments:{all_comments}")
+    for comment in all_comments:
+        print(f"{comment.commentor} says {comment.comment}!")
     return all_comments
 
 
@@ -133,7 +136,7 @@ def show_listing_GET(request, listing_id):
         "is_highest_bidder": is_highest_bidder,
         "is_auctioneer": is_auctioneer,
         "comment_form": empty_comment_form,
-        "all_comments": all_comments
+        "comments": all_comments
     }
 
     return render(request, "auctions/listing.html", context)
@@ -141,8 +144,8 @@ def show_listing_GET(request, listing_id):
 
 def show_listing_POST(request, listing_id):
     current_listing = Listing.objects.get(id=listing_id)
-    comment = comment_form(request.POST)
-    if comment.is_valid():
+    comment = comment_form(request.POST or None)
+    if comment.is_valid() and len(comment.cleaned_data['comment']) > 0:
         new_comment = Comment()
         new_comment.commentor = request.user
         new_comment.item = Listing.objects.get(id=listing_id)

@@ -1,0 +1,21 @@
+<h4>Post a comment.</h4>
+<form method="POST">
+    {% csrf_token %}
+    <div>
+        <table>
+            {{ comment_form.as_table }}
+        </table>
+        <input class="btn-primary" type="submit" value="Comment" />
+    </div>
+</form>
+
+<h4>Comments:</h4>
+{% if comments %}
+        {% for comment in comments %}
+        
+            <div class="comment">
+                 <h5>{{ comment.commentor }}</h5>
+                 <p>{{ comment.comment }}</p>
+            </div>
+        {% endfor %}
+{% endif %}

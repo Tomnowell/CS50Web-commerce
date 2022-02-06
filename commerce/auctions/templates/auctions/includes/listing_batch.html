@@ -1,38 +1,43 @@
 <div class="card-deck">
-    {% for listing in listings %}
-        <div class="card w-100">
-            <span class="border border-primary"></span>
-                <div class="row g-0">  
-                    <div class="col-3">
-                        <img src="{{listing.picture_link}}" class="card-img" alt="Product image">
-                    </div>  
-                    <div class="col-9">
-                        <h5 class="card-title">{{ listing.name }}</h5>
-                        <p class="card-text">{{ listing.description}}</p>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Auctioneer: {{ listing.auctioneer }}</li>
-                            <li class="list-group-item">Current Bid: {{ listing.current_bid }}</li>
-                            <li class="list-group-item">Starting bid: {{ listing.starting_bid }}</li>
-                            <li class="list-group-item">Start time: {{ listing.start_time }}</li>
-                            <li class="list-group-item">End time: {{ listing.end_time }}</li>
-                            <li class="list-group-item">Open: {{ listing.open }}</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="row g-0">
-                    <div class="col-12"> 
-                        <div class="nav nav-pills">
-                            <a href="{% url 'listing' listing.id %}" class="nav-item nav-link">View</a>
-                            {% if user.isregistered %}
-                                <a href="#" class="nav-item nav-link">Watchlist</a>
-                            {% endif %}
-                            {% if listing.auctioneer.id == user.id %}
-                                <a class="nav-item nav-link" href="#">End</a>  
-                            {% endif %}
+    {% if listings %}
+        {% for listing in listings %}
+            <div class="card w-100">
+                <span class="border border-primary"></span>
+                    <div class="row g-0">  
+                        <div class="col-3">
+                            <img src="{{listing.picture_link}}" class="card-img" alt="Product image">
+                        </div>  
+                        <div class="col-9">
+                            <h5 class="card-title">{{ listing.name }}</h5>
+                            <p class="card-text">{{ listing.description}}</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Auctioneer: {{ listing.auctioneer }}</li>
+                                <li class="list-group-item">Current Bid: {{ listing.current_bid }}</li>
+                                <li class="list-group-item">Starting bid: {{ listing.starting_bid }}</li>
+                                <li class="list-group-item">Start time: {{ listing.start_time }}</li>
+                                <li class="list-group-item">End time: {{ listing.end_time }}</li>
+                                <li class="list-group-item">Open: {{ listing.open }}</li>
+                            </ul>
                         </div>
                     </div>
-                </div>
-            </span>
-        </div>
-    {% endfor %}
-</div>
+                    <div class="row g-0">
+                        <div class="col-12"> 
+                            <div class="nav nav-pills">
+                                <a href="{% url 'listing' listing.id %}" class="nav-item nav-link">View</a>
+                                {% if user.isregistered %}
+                                    <a href="#" class="nav-item nav-link">Watchlist</a>
+                                {% endif %}
+                                {% if listing.auctioneer.id == user.id %}
+                                    <a class="nav-item nav-link" href="#">End</a>  
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </span>
+            </div>
+        {% endfor %}
+    {% else %}
+    <strong>No Active Listings!</strong>
+    {% endif %}
+    
+    </div>

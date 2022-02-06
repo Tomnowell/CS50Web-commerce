@@ -6,10 +6,11 @@ import mailbox
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
 
 from decimal import Decimal
 
@@ -118,11 +119,13 @@ def set_listing_context(request, listing_id):
     if number_of_bids > 0:
         current_bid = current_listing.get_current_bid()
         current_bid_amount = current_bid.amount
+        current_high_bidder = current_bid.bidder
         is_highest_bidder = is_user_also_highest_bidder(
             request.user, current_bid)
     else:
         # No bids!!
         current_bid_amount = "No bids!"
+        current_high_bidder = "No bids!"
 
     try:
         all_comments = get_comments(listing_id)
@@ -132,7 +135,7 @@ def set_listing_context(request, listing_id):
     context = {
         "listing": current_listing,
         "current_bid_amount": current_bid_amount,
-        "current_high_bidder": current_bid.bidder,
+        "current_high_bidder": current_high_bidder,
         "categories": Listing.CATEGORIES,
         "current_listing_category": current_listing_category,
         "is_highest_bidder": is_highest_bidder,
@@ -145,14 +148,12 @@ def set_listing_context(request, listing_id):
 
 
 def show_listing_GET(request, listing_id):
-    current_listing = Listing.objects.get(id=listing_id)
 
     context = set_listing_context(request, listing_id)
     return render(request, "auctions/listing.html", context)
 
 
 def show_listing_POST(request, listing_id):
-    current_listing = Listing.objects.get(id=listing_id)
     comment = comment_form(request.POST or None)
 
     if comment.is_valid() and len(comment.cleaned_data['comment']) > 0:
@@ -260,27 +261,28 @@ def bid_if_POST(request, listing_id):
     if form.is_valid():
         item_listing = Listing.objects.get(id=listing_id)
         bidder = request.user
-        new_bid_amount = form.cleaned_data['amount']
+        new_bid_amount = Decimal(form.cleaned_data['amount'])
 
         if is_bid_valid(item_listing, new_bid_amount):
             make_bid(bidder, new_bid_amount, listing_id)
-
             context = {
                 "bid_form": bid_form()
             }
+            messages.success(
+                request, 'Success, Your bid was placed!')
+
             return HttpResponseRedirect("/listing/"+listing_id, context)
         else:
             context = {
-                "message": messages.warning(request, 'Invalid Bid!', extra_tags="alert alert-warning"),
                 "bid_form": bid_form()
             }
+            messages.warning(request, 'Invalid Bid!'),
             return HttpResponseRedirect("/listing/"+listing_id, context)
-
     context = {
-        "message": messages.warning(request, 'Invalid Form!',
-                                    extra_tags="alert alert-danger"),
         "bid_form": bid_form()
     }
+    messages.error(request, 'Invalid Form!')
+
     return HttpResponseRedirect("listing/"+listing_id,
                                 context)
 
@@ -295,10 +297,10 @@ def category_view(request, category):
         }
         return main_view(request, context)
     else:
-        context = {
-            "message": messages.info(request, 'Sorry, your search resulted 0 Items!',
-                                     extra_tags="alert alert-primary")
-        }
+        context = {}
+        messages.info(request, 'Sorry, your search resulted 0 Items!')
+
+        print(context)
         return HttpResponseRedirect(reverse("index"), context)
 
 
@@ -326,7 +328,6 @@ def end_listing(request, id):
 @ login_required
 def watchlist(request):
     listings = request.user.watchlist.all()
-    print(listings)
     if len(listings) > 0:
         context = {
             "title": "Watchlist",

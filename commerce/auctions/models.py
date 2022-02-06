@@ -8,7 +8,7 @@ from decimal import Decimal
 
 class User(AbstractUser):
     def __str__(self):
-        return self.username
+        return f"{self.username}"
 
 
 class Listing(models.Model):
@@ -61,7 +61,8 @@ class Listing(models.Model):
         return self.open
 
     def get_current_bid(self):
-        """[returns: current highest bid (Bid object)]
+        """
+        [returns: current highest bid (Bid object)]
         """
         bid_list = self.get_all_bids()
         try:
@@ -76,10 +77,7 @@ class Listing(models.Model):
         return Bid.objects.filter(item=self)
 
     def __str__(self):
-        return f"{str(self.name)}"
-
-    def __eq__(self, other):
-        return self.id == other.id
+        return f"{self.name}"
 
 
 class Bid(models.Model):
@@ -88,7 +86,8 @@ class Bid(models.Model):
     item = models.ForeignKey(
         Listing, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
-    date_created = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(
+        default=datetime.now(timezone.utc), editable=False)
 
     def __eq__(self, other):
         return self.amount == other.amount
@@ -109,7 +108,7 @@ class Bid(models.Model):
         return self.amount >= other.amount
 
     def __str__(self):
-        return f"{str(self.bidder.username)}->{str(self.item.name)}->{str(self.amount)}"
+        return f"{self.bidder.username} -> {self.item.name} -> {self.amount}"
 
 
 class Comment(models.Model):
@@ -121,4 +120,4 @@ class Comment(models.Model):
     date_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{str(self.commentor.username)}->{str(self.item)}->{str(self.comment)}"
+        return f"{self.commentor.username} -> {self.item} -> {self.comment}"

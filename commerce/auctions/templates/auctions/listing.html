@@ -6,7 +6,7 @@
     <h2> {{ listing.name }} </h2>
     <div class="container">
         <div class="row">
-            <div class="col-9">
+            <div class="col-8">
                 <img class="img-thumbnail" src="{{ listing.picture_link }}">
 
                 <p> {{ listing.description }} </p>
@@ -23,7 +23,7 @@
                 {% endif %}
                 
             </div>
-            <div class="col-3">
+            <div class="col-4">
                 {% if listing.open == True%}
                     {% if is_highest_bidder %}
                         <strong>You are the current highest bidder!<strong>

@@ -5,16 +5,20 @@
         <table>
             {{ comment_form.as_table }}
         </table>
-        <input class="btn-primary" type="submit" value="Comment" />
+        <input class="btn-primary" type="submit" name="comment" value="Comment" />
     </div>
 </form>
 
 <h4>Comments:</h4>
 {% if comments %}
         {% for comment in comments %}
-            <div class="comment">
+            <div class="card card-sm">
+                <div class="card-body">
                  <h5>{{ comment.commentor }}</h5>
+                 <span>on {{ comment.date_created}} said:</span>
+                
                  <p>{{ comment.comment }}</p>
+                </div>
             </div>
         {% endfor %}
 {% endif %}

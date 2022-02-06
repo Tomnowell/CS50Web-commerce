@@ -89,9 +89,6 @@ class Bid(models.Model):
     date_created = models.DateTimeField(
         default=datetime.now(timezone.utc), editable=False)
 
-    def __eq__(self, other):
-        return self.amount == other.amount
-
     def __ne__(self, other):
         return self.amount != other.amount
 

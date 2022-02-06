@@ -153,9 +153,8 @@ def show_listing_GET(request, listing_id):
     return render(request, "auctions/listing.html", context)
 
 
-def show_listing_POST(request, listing_id):
+def make_comment(request, listing_id):
     comment = comment_form(request.POST or None)
-
     if comment.is_valid() and len(comment.cleaned_data['comment']) > 0:
         new_comment = Comment()
         new_comment.commentor = request.user
@@ -163,9 +162,16 @@ def show_listing_POST(request, listing_id):
         new_comment.comment = comment.cleaned_data['comment']
         new_comment.save()
 
-    new_bid = bid_form(request.POST or None)
-    if new_bid.is_valid:
-        bid(request, listing_id)
+
+def show_listing_POST(request, listing_id):
+
+    if "comment" in request.POST:
+        make_comment(request, listing_id)
+
+    if "bid" in request.POST:
+        new_bid = bid_form(request.POST or None)
+        if new_bid.is_valid:
+            bid(request, listing_id)
 
     context = set_listing_context(request, listing_id)
 
@@ -237,7 +243,7 @@ def bid(request, id):
     if request.method == "GET":
         return bid_if_GET(request, id)
 
-    elif request.method == "POST":
+    elif request.method == "POST" and "bid" in request.POST:
         return bid_if_POST(request, id)
 
     else:
